@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="BiometricAttendance.Application/BiometricAttendance.Application.csproj" />
+    <Project Path="BiometricAttendance.Domain/BiometricAttendance.Domain.csproj" />
+    <Project Path="BiometricAttendance.Infrastructure/BiometricAttendance.Infrastructure.csproj" />
+    <Project Path="BiometricAttendance.Presentation/BiometricAttendance.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="BiometricAttendance.Application.Test/BiometricAttendance.Application.Test.csproj" Id="a39f33aa-9420-4f0b-bce8-f2da3671db23" />
+  </Folder>
+</Solution>

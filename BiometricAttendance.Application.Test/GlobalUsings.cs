@@ -1,0 +1,8 @@
+global using BiometricAttendance.Application.Interfaces;
+global using BiometricAttendance.Domain.Abstraction;
+global using BiometricAttendance.Domain.Constants;
+global using BiometricAttendance.Domain.Entities;
+global using BiometricAttendance.Domain.Errors;
+global using BiometricAttendance.Domain.Repositories;
+global using FakeItEasy;
+global using Mapster;
