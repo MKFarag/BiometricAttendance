@@ -1,4 +1,6 @@
-﻿namespace BiometricAttendance.Application.Interfaces;
+﻿using System.Linq.Expressions;
+
+namespace BiometricAttendance.Application.Interfaces;
 
 public interface IJobManager
 {
