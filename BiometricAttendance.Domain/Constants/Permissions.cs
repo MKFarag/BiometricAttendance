@@ -8,6 +8,17 @@ public static class Permissions
 
     public const string ReadDepartment = "department:read";
     public const string AddDepartment = "department:add";
+    public const string UpdateDepartment = "department:modify";
+    public const string RemoveDepartment = "department:remove";
+
+    #endregion
+
+    #region Course
+
+    public const string ReadCourse = "course:read";
+    public const string AddCourse = "course:add";
+    public const string UpdateCourse = "course:modify";
+    public const string RemoveCourse = "course:remove";
 
     #endregion
 

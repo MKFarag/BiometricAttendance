@@ -8,6 +8,7 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<InstructorPass> InstructorPasses { get; }
     IRoleRepository Roles { get; }
     IStudentRepository Students { get; }
+    IGenericRepository<StudentCourse> StudentCourses { get; }
     IUserRepository Users { get; }
 
     /// <summary>Save changes to the database</summary>

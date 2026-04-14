@@ -5,6 +5,7 @@ public static class Cache
     public partial class Tags
     {
         public const string Departments = "departments";
+        public const string Courses = "courses";
         public const string Roles = "roles";
         public const string Users = "users";
     }
@@ -12,6 +13,7 @@ public static class Cache
     public partial class Keys
     {
         public const string Departments = "departments:all";
+        public const string Courses = "courses:all";
         public const string RolesWithoutDefault = "roles:without-default";
         public const string UsersWithoutDefaultRole = "users:without-default-role";
     }

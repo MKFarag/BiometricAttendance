@@ -11,6 +11,7 @@ public sealed class Student
     public Department Department { get; set; } = default!;
     public Fingerprint? Fingerprint { get; set; }
     public List<Attendance> Attendances { get; set; } = [];
+    public List<StudentCourse> Courses { get; set; } = [];
 
     public static Student Create(string userId, int level, int departmentId, int? fingerprintId = null)
     {

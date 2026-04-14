@@ -3,6 +3,7 @@ global using BiometricAttendance.Application.Contracts.Auth;
 global using BiometricAttendance.Application.Contracts.Common;
 global using BiometricAttendance.Application.Contracts.Roles;
 global using BiometricAttendance.Application.Contracts.Users;
+global using BiometricAttendance.Application.Contracts.Courses;
 global using BiometricAttendance.Application.Helpers;
 global using BiometricAttendance.Application.Interfaces;
 global using BiometricAttendance.Domain.Abstraction;

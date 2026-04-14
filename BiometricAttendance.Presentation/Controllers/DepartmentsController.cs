@@ -125,7 +125,7 @@ public class DepartmentsController(ISender sender) : ControllerBase
     /// <response code="403">If the user does not have permission to update departments.</response>
     /// <response code="409">If a department with the same name already exists.</response>
     [HttpPut("{id}")]
-    [HasPermission(Permissions.AddDepartment)]
+    [HasPermission(Permissions.UpdateDepartment)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -156,7 +156,7 @@ public class DepartmentsController(ISender sender) : ControllerBase
     /// <response code="403">If the user does not have permission to remove departments.</response>
     /// <response code="409">If the department is in use and cannot be deleted.</response>
     [HttpDelete("{id}")]
-    [HasPermission(Permissions.AddDepartment)]
+    [HasPermission(Permissions.RemoveDepartment)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

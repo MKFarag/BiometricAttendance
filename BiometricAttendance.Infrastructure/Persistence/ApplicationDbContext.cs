@@ -12,6 +12,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Fingerprint> Fingerprints { get; set; }
     public DbSet<InstructorPass> InstructorPasses { get; set; }
     public DbSet<Student> Students { get; set; }
+    public DbSet<StudentCourse> StudentCourses { get; set; }
 
     #endregion
 
