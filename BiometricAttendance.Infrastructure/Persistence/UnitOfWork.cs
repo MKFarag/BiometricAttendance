@@ -11,6 +11,7 @@ public sealed class UnitOfWork : IUnitOfWork
 
     public IGenericRepository<Course> Courses { get; private set; }
     public IGenericRepository<Department> Departments { get; private set; }
+    public IGenericRepository<InstructorPass> InstructorPasses { get; private set; }
     public IRoleRepository Roles { get; private set; }
     public IStudentRepository Students { get; private set; }
     public IUserRepository Users { get; private set; }
@@ -25,6 +26,7 @@ public sealed class UnitOfWork : IUnitOfWork
 
         Courses = new GenericRepository<Course>(_context);
         Departments = new GenericRepository<Department>(_context);
+        InstructorPasses = new GenericRepository<InstructorPass>(_context);
         Users = new UserRepository(_context, userManager);
         Students = new StudentRepository(_context);
         Roles = new RoleRepository(_context, roleManager);

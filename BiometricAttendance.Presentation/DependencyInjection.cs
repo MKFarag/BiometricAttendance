@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using BiometricAttendance.Application.Interfaces;
+using BiometricAttendance.Application.Services;
 using BiometricAttendance.Infrastructure;
 using BiometricAttendance.Infrastructure.Authentication;
 using BiometricAttendance.Infrastructure.Health;
@@ -41,6 +42,7 @@ public static class DependencyInjection
 
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IInstructorPassService, InstructorPassService>();
             services.AddScoped<IJobManager, JobManager>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<ISignInService, SignInService>();
