@@ -16,6 +16,14 @@ internal class ApplicationRoleConfiguration : IEntityTypeConfiguration<Applicati
         },
         new ApplicationRole
         {
+            Id = DefaultRoles.Pending.Id,
+            Name = DefaultRoles.Pending.Name,
+            NormalizedName = DefaultRoles.Pending.Name.ToUpper(),
+            ConcurrencyStamp = DefaultRoles.Pending.ConcurrencyStamp,
+            IsDefault = true,
+        },
+        new ApplicationRole
+        {
             Id = DefaultRoles.Student.Id,
             Name = DefaultRoles.Student.Name,
             NormalizedName = DefaultRoles.Student.Name.ToUpper(),

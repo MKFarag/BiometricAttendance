@@ -9,8 +9,12 @@ public sealed class UnitOfWork : IUnitOfWork
     private IDbContextTransaction? _currentTransaction;
     private bool _disposed = false;
 
-    public IUserRepository Users { get; private set; }
+    public IGenericRepository<Course> Courses { get; private set; }
+    public IGenericRepository<Department> Departments { get; private set; }
     public IRoleRepository Roles { get; private set; }
+    public IStudentRepository Students { get; private set; }
+    public IUserRepository Users { get; private set; }
+
 
     public UnitOfWork(
         ApplicationDbContext context,
@@ -19,7 +23,10 @@ public sealed class UnitOfWork : IUnitOfWork
     {
         _context = context;
 
+        Courses = new GenericRepository<Course>(_context);
+        Departments = new GenericRepository<Department>(_context);
         Users = new UserRepository(_context, userManager);
+        Students = new StudentRepository(_context);
         Roles = new RoleRepository(_context, roleManager);
     }
 

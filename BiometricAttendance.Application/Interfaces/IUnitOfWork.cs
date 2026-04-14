@@ -2,8 +2,11 @@ namespace BiometricAttendance.Application.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-    IUserRepository Users { get; }
+    IGenericRepository<Course> Courses { get; }
+    IGenericRepository<Department> Departments { get; }
     IRoleRepository Roles { get; }
+    IStudentRepository Students { get; }
+    IUserRepository Users { get; }
 
     /// <summary>Save changes to the database</summary>
     /// <returns>The number of state entries written to the database</returns>

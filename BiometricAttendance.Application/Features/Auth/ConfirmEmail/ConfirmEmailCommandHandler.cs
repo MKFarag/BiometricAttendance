@@ -19,7 +19,7 @@ public class ConfirmEmailCommandHandler(IUnitOfWork unitOfWork, IUrlEncoder urlE
         var result = await _unitOfWork.Users.ConfirmEmailWithTokenAsync(user, token);
 
         if (result.IsSuccess)
-            result = await _unitOfWork.Users.AddToRoleAsync(user, DefaultRoles.Student.Name);
+            result = await _unitOfWork.Users.AddToRoleAsync(user, DefaultRoles.Pending.Name);
 
         return result;
     }
