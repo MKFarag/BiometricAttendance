@@ -7,5 +7,9 @@ internal sealed class DepartmentConfiguration : IEntityTypeConfiguration<Departm
         builder
             .Property(x => x.Name)
             .HasMaxLength(100);
+
+        builder
+            .HasIndex(x => x.Name)
+            .IsUnique();
     }
 }
