@@ -11,5 +11,13 @@ internal sealed class CourseConfiguration : IEntityTypeConfiguration<Course>
         builder
             .Property(x => x.Code)
             .HasMaxLength(25);
+
+        builder
+            .HasIndex(x => x.Name)
+            .IsUnique();
+
+        builder
+            .HasIndex(x => x.Code)
+            .IsUnique();
     }
 }

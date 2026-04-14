@@ -12,3 +12,4 @@ global using BiometricAttendance.Domain.Errors;
 global using BiometricAttendance.Domain.Repositories;
 global using FluentValidation;
 global using Mapster;
+global using BiometricAttendance.Application.Contracts.Departments;

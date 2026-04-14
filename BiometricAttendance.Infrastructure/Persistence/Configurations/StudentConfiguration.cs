@@ -6,8 +6,8 @@ internal sealed class StudentConfiguration : IEntityTypeConfiguration<Student>
     {
         builder
             .HasOne<ApplicationUser>()
-            .WithMany()
-            .HasForeignKey(x => x.UserId);
+            .WithOne()
+            .HasForeignKey<Student>(x => x.UserId);
 
         builder
             .HasOne(s => s.Fingerprint)

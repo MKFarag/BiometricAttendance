@@ -4,6 +4,13 @@ public static class Permissions
 {
     public static string Type { get; } = nameof(Permissions).ToLower();
 
+    #region Department
+
+    public const string ReadDepartment = "department:read";
+    public const string AddDepartment = "department:add";
+
+    #endregion
+
     #region Role
 
     public const string ReadRole = "role:read";

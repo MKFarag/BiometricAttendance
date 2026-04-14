@@ -6,3 +6,4 @@ global using BiometricAttendance.Domain.Errors;
 global using BiometricAttendance.Domain.Repositories;
 global using FakeItEasy;
 global using Mapster;
+global using System.Linq.Expressions;
