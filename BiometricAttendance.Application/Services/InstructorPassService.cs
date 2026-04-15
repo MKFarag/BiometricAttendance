@@ -5,7 +5,7 @@ public class InstructorPassService(IUnitOfWork unitOfWork) : IInstructorPassServ
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private const int _maxUses = 10;
 
-    public async Task<bool> TryUse(string userId, string pass, CancellationToken cancellationToken = default)
+    public async Task<bool> TryUseAsync(string userId, string pass, CancellationToken cancellationToken = default)
     {
         var currentPass = await _unitOfWork.InstructorPasses
             .TrackedFindAsync(x => !x.IsDisabled && x.UsedBy.Count < x.MaxUsedCount, cancellationToken)
@@ -24,7 +24,7 @@ public class InstructorPassService(IUnitOfWork unitOfWork) : IInstructorPassServ
         return true;
     }
 
-    public async Task CreateNewPass(CancellationToken cancellationToken = default)
+    public async Task CreateNewPassAsync(CancellationToken cancellationToken = default)
     {
         var currentPass = await _unitOfWork.InstructorPasses
             .TrackedFindAsync(x => !x.IsDisabled && x.UsedBy.Count < x.MaxUsedCount, cancellationToken)

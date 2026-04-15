@@ -285,4 +285,5 @@ public class AuthController(ISender sender) : ControllerBase
             ? Ok()
             : result.ToProblem();
     }
+
 }

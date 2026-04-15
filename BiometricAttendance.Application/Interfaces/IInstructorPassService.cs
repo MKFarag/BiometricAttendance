@@ -2,6 +2,6 @@
 
 public interface IInstructorPassService
 {
-    Task<bool> TryUse(string userId, string pass, CancellationToken cancellationToken = default);
-    Task CreateNewPass(CancellationToken cancellationToken = default);
+    Task<bool> TryUseAsync(string userId, string pass, CancellationToken cancellationToken = default);
+    Task CreateNewPassAsync(CancellationToken cancellationToken = default);
 }

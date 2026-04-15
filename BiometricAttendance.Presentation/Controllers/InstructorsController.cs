@@ -1,0 +1,42 @@
+using BiometricAttendance.Application.Contracts.Auth;
+using BiometricAttendance.Application.Features.Incstructors.GetRole;
+
+namespace BiometricAttendance.Presentation.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize]
+[EnableRateLimiting(RateLimitingOptions.PolicyNames.Sliding)]
+public class InstructorsController(ISender sender) : ControllerBase
+{
+    private readonly ISender _sender = sender;
+
+    /// <summary>
+    /// Assigns instructor role to the current authenticated user.
+    /// </summary>
+    /// <remarks>
+    /// Validates the instructor pass and updates the current user's role to instructor.
+    /// </remarks>
+    /// <param name="request">The request containing instructor pass.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Ok on success.</returns>
+    /// <response code="200">If role was assigned successfully.</response>
+    /// <response code="400">If pass is invalid.</response>
+    /// <response code="401">If the user is unauthorized.</response>
+    [HttpPost("role")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetRole([FromBody] GetInstructorRoleRequest request, CancellationToken cancellationToken)
+    {
+        if (User.GetId() is not { } userId)
+            return Unauthorized();
+
+        var command = new GetInstructorRoleCommand(userId, request.Pass);
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok()
+            : result.ToProblem();
+    }
+}

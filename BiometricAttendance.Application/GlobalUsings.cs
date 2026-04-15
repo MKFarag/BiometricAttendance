@@ -14,3 +14,4 @@ global using BiometricAttendance.Domain.Repositories;
 global using FluentValidation;
 global using Mapster;
 global using BiometricAttendance.Application.Contracts.Departments;
+global using BiometricAttendance.Application.Contracts.Students;
