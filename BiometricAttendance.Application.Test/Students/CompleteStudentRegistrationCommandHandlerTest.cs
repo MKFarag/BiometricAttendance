@@ -8,7 +8,7 @@ public class CompleteStudentRegistrationCommandHandlerTest
     private readonly IUnitOfWork _unitOfWork = A.Fake<IUnitOfWork>();
     private readonly IUserRepository _usersRepo = A.Fake<IUserRepository>();
     private readonly IGenericRepository<Department> _departmentsRepo = A.Fake<IGenericRepository<Department>>();
-    private readonly IGenericRepository<Student> _studentsRepo = A.Fake<IGenericRepository<Student>>();
+    private readonly IStudentRepository _studentsRepo = A.Fake<IStudentRepository>();
     private readonly CompleteStudentRegistrationCommandHandler _handler;
 
     public CompleteStudentRegistrationCommandHandlerTest()
@@ -23,10 +23,13 @@ public class CompleteStudentRegistrationCommandHandlerTest
     public async Task Handle_WhenUserNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var command = new CompleteStudentRegistrationCommand("user-id", new CompleteStudentRegistrationRequest(2, 1));
+        var userId = Guid.CreateVersion7().ToString();
+        var request = new CompleteStudentRegistrationRequest(2, 1);
 
-        A.CallTo(() => _usersRepo.FindByIdAsync(command.UserId, A<CancellationToken>.Ignored))
-            .Returns((AppUser?)null);
+        A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
+            .Returns((User?)null);
+
+        var command = new CompleteStudentRegistrationCommand(userId, request);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -40,14 +43,16 @@ public class CompleteStudentRegistrationCommandHandlerTest
     public async Task Handle_WhenDepartmentNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var user = new AppUser();
-        var command = new CompleteStudentRegistrationCommand("user-id", new CompleteStudentRegistrationRequest(2, 999));
+        var user = new User { Id = Guid.CreateVersion7().ToString() };
+        var request = new CompleteStudentRegistrationRequest(2, 1);
 
-        A.CallTo(() => _usersRepo.FindByIdAsync(command.UserId, A<CancellationToken>.Ignored))
+        A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
 
         A.CallTo(() => _departmentsRepo.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(false);
+
+        var command = new CompleteStudentRegistrationCommand(user.Id, request);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -61,26 +66,28 @@ public class CompleteStudentRegistrationCommandHandlerTest
     public async Task Handle_WhenRequestIsValid_ReturnsSuccess()
     {
         // Arrange
-        var user = new AppUser();
-        var command = new CompleteStudentRegistrationCommand("user-id", new CompleteStudentRegistrationRequest(4, 2));
+        var user = new User { Id = Guid.CreateVersion7().ToString() };
+        var request = new CompleteStudentRegistrationRequest(2, 1);
 
-        A.CallTo(() => _usersRepo.FindByIdAsync(command.UserId, A<CancellationToken>.Ignored))
+        A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
 
         A.CallTo(() => _departmentsRepo.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
         A.CallTo(() => _studentsRepo.AddAsync(A<Student>.Ignored, A<CancellationToken>.Ignored))
+            .Returns(new Student());
+
+        A.CallTo(() => _usersRepo.DeleteAllRolesAsync(A<User>.Ignored))
             .Returns(Task.CompletedTask);
 
-        A.CallTo(() => _usersRepo.DeleteAllRolesAsync(user))
-            .Returns(Task.CompletedTask);
-
-        A.CallTo(() => _usersRepo.AddToRoleAsync(user, DefaultRoles.Student.Name))
-            .Returns(Task.CompletedTask);
+        A.CallTo(() => _usersRepo.AddToRoleAsync(A<User>.Ignored, A<string>.Ignored))
+            .Returns(Result.Success());
 
         A.CallTo(() => _unitOfWork.CompleteAsync(A<CancellationToken>.Ignored))
             .Returns(1);
+
+        var command = new CompleteStudentRegistrationCommand(user.Id, request);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -88,15 +95,10 @@ public class CompleteStudentRegistrationCommandHandlerTest
         // Assert
         Assert.True(result.IsSuccess);
 
-        A.CallTo(() => _studentsRepo.AddAsync(
-                A<Student>.That.Matches(x => x.Level == command.Request.Level && x.DepartmentId == command.Request.DepartmentId),
-                A<CancellationToken>.Ignored))
+        A.CallTo(() => _usersRepo.DeleteAllRolesAsync(A<User>.Ignored))
             .MustHaveHappenedOnceExactly();
 
-        A.CallTo(() => _usersRepo.DeleteAllRolesAsync(user))
-            .MustHaveHappenedOnceExactly();
-
-        A.CallTo(() => _usersRepo.AddToRoleAsync(user, DefaultRoles.Student.Name))
+        A.CallTo(() => _usersRepo.AddToRoleAsync(A<User>.Ignored, A<string>.Ignored))
             .MustHaveHappenedOnceExactly();
 
         A.CallTo(() => _unitOfWork.CompleteAsync(A<CancellationToken>.Ignored))

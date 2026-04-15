@@ -24,16 +24,13 @@ public class InstructorsController(ISender sender) : ControllerBase
     /// <response code="400">If pass is invalid.</response>
     /// <response code="401">If the user is unauthorized.</response>
     [HttpPost("role")]
+    [Authorize(Roles = DefaultRoles.Pending.Name)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetRole([FromBody] GetInstructorRoleRequest request, CancellationToken cancellationToken)
     {
-        if (User.GetId() is not { } userId)
-            return Unauthorized();
-
-        var command = new GetInstructorRoleCommand(userId, request.Pass);
-        var result = await _sender.Send(command, cancellationToken);
+        var result = await _sender.Send(new GetInstructorRoleCommand(User.GetId()!, request.Pass), cancellationToken);
 
         return result.IsSuccess
             ? Ok()

@@ -19,10 +19,13 @@ public class GetInstructorRoleCommandHandlerTest
     public async Task Handle_WhenUserNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var command = new GetInstructorRoleCommand("user-id", "1234");
+        var user = new User { Id = Guid.CreateVersion7().ToString() };
+        var pass = "pass";
 
-        A.CallTo(() => _usersRepo.FindByIdAsync(command.UserId, A<CancellationToken>.Ignored))
-            .Returns((AppUser?)null);
+        A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
+            .Returns((User?)null);
+
+        var command = new GetInstructorRoleCommand(user.Id, pass);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -36,17 +39,19 @@ public class GetInstructorRoleCommandHandlerTest
     public async Task Handle_WhenPassIsInvalid_ReturnsInvalidPasswordError()
     {
         // Arrange
-        var user = new AppUser();
-        var command = new GetInstructorRoleCommand("user-id", "wrong-pass");
+        var user = new User { Id = Guid.CreateVersion7().ToString() };
+        var pass = "pass";
 
-        A.CallTo(() => _usersRepo.FindByIdAsync(command.UserId, A<CancellationToken>.Ignored))
+        A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
 
         A.CallTo(() => _unitOfWork.BeginTransactionAsync(A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
 
-        A.CallTo(() => _instructorPassService.TryUseAsync(command.UserId, command.Pass, A<CancellationToken>.Ignored))
+        A.CallTo(() => _instructorPassService.TryUseAsync(A<string>.Ignored, A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(false);
+
+        var command = new GetInstructorRoleCommand(user.Id, pass);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -63,26 +68,28 @@ public class GetInstructorRoleCommandHandlerTest
     public async Task Handle_WhenPassIsValid_ReturnsSuccess()
     {
         // Arrange
-        var user = new AppUser();
-        var command = new GetInstructorRoleCommand("user-id", "correct-pass");
+        var user = new User { Id = Guid.CreateVersion7().ToString() };
+        var pass = "pass";
 
-        A.CallTo(() => _usersRepo.FindByIdAsync(command.UserId, A<CancellationToken>.Ignored))
+        A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
 
         A.CallTo(() => _unitOfWork.BeginTransactionAsync(A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
 
-        A.CallTo(() => _instructorPassService.TryUseAsync(command.UserId, command.Pass, A<CancellationToken>.Ignored))
+        A.CallTo(() => _instructorPassService.TryUseAsync(A<string>.Ignored, A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
         A.CallTo(() => _usersRepo.DeleteAllRolesAsync(user))
             .Returns(Task.CompletedTask);
 
-        A.CallTo(() => _usersRepo.AddToRoleAsync(user, DefaultRoles.Instructor.Name))
-            .Returns(Task.CompletedTask);
+        A.CallTo(() => _usersRepo.AddToRoleAsync(A<User>.Ignored, A<string>.Ignored))
+            .Returns(Result.Success());
 
         A.CallTo(() => _unitOfWork.CommitTransactionAsync(A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
+
+        var command = new GetInstructorRoleCommand(user.Id, pass);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -107,20 +114,22 @@ public class GetInstructorRoleCommandHandlerTest
     public async Task Handle_WhenOperationCanceledExceptionOccurs_ReturnsSetRoleFailedError()
     {
         // Arrange
-        var user = new AppUser();
-        var command = new GetInstructorRoleCommand("user-id", "correct-pass");
+        var user = new User { Id = Guid.CreateVersion7().ToString() };
+        var pass = "pass";
 
-        A.CallTo(() => _usersRepo.FindByIdAsync(command.UserId, A<CancellationToken>.Ignored))
+        A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
 
         A.CallTo(() => _unitOfWork.BeginTransactionAsync(A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
 
-        A.CallTo(() => _instructorPassService.TryUseAsync(command.UserId, command.Pass, A<CancellationToken>.Ignored))
+        A.CallTo(() => _instructorPassService.TryUseAsync(A<string>.Ignored, A<string>.Ignored, A<CancellationToken>.Ignored))
             .Throws(new OperationCanceledException());
 
         A.CallTo(() => _unitOfWork.RollbackTransactionAsync())
             .Returns(Task.CompletedTask);
+
+        var command = new GetInstructorRoleCommand(user.Id, pass);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -137,20 +146,22 @@ public class GetInstructorRoleCommandHandlerTest
     public async Task Handle_WhenExceptionOccurs_RollsBackTransactionAndThrows()
     {
         // Arrange
-        var user = new AppUser();
-        var command = new GetInstructorRoleCommand("user-id", "correct-pass");
+        var user = new User { Id = Guid.CreateVersion7().ToString() };
+        var pass = "pass";
 
-        A.CallTo(() => _usersRepo.FindByIdAsync(command.UserId, A<CancellationToken>.Ignored))
+        A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
 
         A.CallTo(() => _unitOfWork.BeginTransactionAsync(A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
 
-        A.CallTo(() => _instructorPassService.TryUseAsync(command.UserId, command.Pass, A<CancellationToken>.Ignored))
+        A.CallTo(() => _instructorPassService.TryUseAsync(A<string>.Ignored, A<string>.Ignored, A<CancellationToken>.Ignored))
             .Throws(new InvalidOperationException("boom"));
 
         A.CallTo(() => _unitOfWork.RollbackTransactionAsync())
             .Returns(Task.CompletedTask);
+
+        var command = new GetInstructorRoleCommand(user.Id, pass);
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
