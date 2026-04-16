@@ -6,13 +6,27 @@
 /// <param name="pageNumber">The current page number (1-based)</param>
 /// <param name="count">The total number of items in the source collection</param>
 /// <param name="pageSize">The number of items per page</param>
-public class PaginatedList<T>(List<T> items, int pageNumber, int count, int pageSize) : IPaginatedList<T> where T : class
+public class PaginatedList<T> : IPaginatedList<T> where T : class
 {
-    public List<T> Items { get; private set; } = items;
-    public int PageNumber { get; private set; } = pageNumber;
-    public int TotalPages { get; private set; } = (int)Math.Ceiling(count / (double)pageSize);
+    public List<T> Items { get; private set; }
+    public int PageNumber { get; private set; }
+    public int TotalPages { get; private set; }
     public bool HasPreviousPage => PageNumber > 1;
     public bool HasNextPage => PageNumber < TotalPages;
+
+    public PaginatedList(List<T> items, int pageNumber, int count, int pageSize)
+    {
+        Items = items;
+        PageNumber = pageNumber;
+        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+    }
+
+    private PaginatedList(List<T> items, int pageNumber, int totalPages)
+    {
+        Items = items;
+        PageNumber = pageNumber;
+        TotalPages = totalPages;
+    }
 
     /// <summary>
     /// Asynchronously creates a paginated list from the given IQueryable source.
@@ -28,5 +42,19 @@ public class PaginatedList<T>(List<T> items, int pageNumber, int count, int page
         var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
 
         return new PaginatedList<T>(items, pageNumber, count, pageSize);
+    }
+
+    /// <summary>
+    /// Creates a new PaginatedList<T> containing the specified items and copies the page number and total pages from an
+    /// existing paginated list.
+    /// </summary>
+    /// <typeparam name="Old">The element type of the provided existing paginated list.</typeparam>
+    /// <param name="newItems">The items for the new paginated list.</param>
+    /// <param name="exitingList">The paginated list to copy page number and total pages from.</param>
+    /// <returns>A PaginatedList<T> containing newItems and the pagination metadata (page number and total pages) from
+    /// exitingList.</returns>
+    public static PaginatedList<T> CopyWithNewItems<Old>(List<T> newItems, PaginatedList<Old> exitingList) where Old : class
+    {
+        return new PaginatedList<T>(newItems, exitingList.PageNumber, exitingList.TotalPages);
     }
 }

@@ -24,16 +24,6 @@ public record RequestFilters
     /// The name of the column to apply the search value against.
     /// </summary>
     public string? SearchColumn { get; init; }
-
-    /// <summary>
-    /// The name of the column to sort by.
-    /// </summary>
-    public string? SortColumn { get; init; }
-
-    /// <summary>
-    /// The direction to sort the results. Typically "ASC" or "DESC". Defaults to "ASC".
-    /// </summary>
-    public string? SortDirection { get; init; } = OrderBy.Ascending;
 }
 
 #region Validation
@@ -51,15 +41,6 @@ public class RequestFiltersValidator : AbstractValidator<RequestFilters>
         RuleFor(x => x.SearchColumn)
             .Matches(RegexPatterns.AlphanumericUnderscore)
             .WithMessage("Search column can only contain letters, numbers, and underscores.");
-
-        RuleFor(x => x.SortColumn)
-            .Matches(RegexPatterns.AlphanumericUnderscore)
-            .WithMessage("Sort column can only contain letters, numbers, and underscores.");
-
-        RuleFor(x => x.SortDirection)
-            .Must(x => string.Equals(x, "ASC", StringComparison.OrdinalIgnoreCase) ||
-                       string.Equals(x, "DESC", StringComparison.OrdinalIgnoreCase))
-            .WithMessage("Sort direction must be either 'ASC' or 'DESC'.");
     }
 }
 

@@ -1,11 +1,12 @@
 using BiometricAttendance.Application.Contracts.Students;
 using BiometricAttendance.Application.Features.Students.CompleteRegistration;
+using BiometricAttendance.Application.Features.Students.GetAll;
 
 namespace BiometricAttendance.Presentation.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
 [EnableRateLimiting(RateLimitingOptions.PolicyNames.Sliding)]
 public class StudentsController(ISender sender) : ControllerBase
 {
@@ -36,4 +37,8 @@ public class StudentsController(ISender sender) : ControllerBase
             ? Ok()
             : result.ToProblem();
     }
+
+    [HttpGet("")]
+    public async Task<IActionResult> GetAll([FromQuery] RequestFilters filters, CancellationToken cancellationToken)
+        => Ok(await _sender.Send(new GetAllStudentsQuery(filters), cancellationToken));
 }

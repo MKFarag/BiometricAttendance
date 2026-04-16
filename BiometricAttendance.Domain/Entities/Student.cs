@@ -13,6 +13,8 @@ public sealed class Student
     public List<Attendance> Attendances { get; set; } = [];
     public List<StudentCourse> Courses { get; set; } = [];
 
+    public string DepartmentName => Department.Name;
+
     public static Student Create(string userId, int level, int departmentId, int? fingerprintId = null)
     {
         return new Student

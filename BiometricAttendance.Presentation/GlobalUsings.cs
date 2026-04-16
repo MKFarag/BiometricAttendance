@@ -9,3 +9,4 @@ global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.RateLimiting;
 global using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
+global using BiometricAttendance.Application.Contracts.Common;
