@@ -1,6 +1,9 @@
+using BiometricAttendance.Application.Settings;
 using BiometricAttendance.Infrastructure.Messaging;
+using BiometricAttendance.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace BiometricAttendance.Infrastructure;
 
@@ -25,6 +28,14 @@ public static class DependencyInjection
             services.AddStackExchangeRedisCache(options => options.Configuration = configuration.GetConnectionString("Redis"));
 
             services.AddCQRSConfig(typeof(INotificationService).Assembly);
+
+            services.AddOptions<EnrollmentCommands>()
+                .BindConfiguration(EnrollmentCommands.SectionName)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+            //services.AddSingleton<ISerialPortService>(provider =>
+            //    new SerialPortService("COM3", 9600, provider.GetRequiredService<ILogger<SerialPortService>>()));
 
             return services;
         }
