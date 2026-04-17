@@ -14,7 +14,10 @@ public class GetInstructorRoleCommandHandler(IUnitOfWork unitOfWork, IInstructor
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
             if (!await _instructorPassService.TryUseAsync(request.UserId, request.Pass, cancellationToken))
+            {
+                await _unitOfWork.RollbackTransactionAsync();
                 return Result.Failure(InstructorErrors.InvalidPassword);
+            }
 
             await _unitOfWork.Users.DeleteAllRolesAsync(user);
 

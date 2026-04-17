@@ -33,6 +33,12 @@ public class GetInstructorRoleCommandHandlerTest
         // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(UserErrors.NotFound, result.Error);
+
+        A.CallTo(() => _unitOfWork.BeginTransactionAsync(A<CancellationToken>.Ignored))
+            .MustNotHaveHappened();
+
+        A.CallTo(() => _instructorPassService.TryUseAsync(A<string>.Ignored, A<string>.Ignored, A<CancellationToken>.Ignored))
+            .MustNotHaveHappened();
     }
 
     [Fact]
@@ -60,8 +66,20 @@ public class GetInstructorRoleCommandHandlerTest
         Assert.True(result.IsFailure);
         Assert.Equal(InstructorErrors.InvalidPassword, result.Error);
 
+        A.CallTo(() => _unitOfWork.BeginTransactionAsync(A<CancellationToken>.Ignored))
+            .MustHaveHappenedOnceExactly();
+
+        A.CallTo(() => _usersRepo.DeleteAllRolesAsync(A<User>.Ignored))
+            .MustNotHaveHappened();
+
+        A.CallTo(() => _usersRepo.AddToRoleAsync(A<User>.Ignored, A<string>.Ignored))
+            .MustNotHaveHappened();
+
         A.CallTo(() => _unitOfWork.CommitTransactionAsync(A<CancellationToken>.Ignored))
             .MustNotHaveHappened();
+
+        A.CallTo(() => _unitOfWork.RollbackTransactionAsync())
+            .MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -108,6 +126,9 @@ public class GetInstructorRoleCommandHandlerTest
 
         A.CallTo(() => _unitOfWork.CommitTransactionAsync(A<CancellationToken>.Ignored))
             .MustHaveHappenedOnceExactly();
+
+        A.CallTo(() => _unitOfWork.RollbackTransactionAsync())
+            .MustNotHaveHappened();
     }
 
     [Fact]
@@ -138,6 +159,9 @@ public class GetInstructorRoleCommandHandlerTest
         Assert.True(result.IsFailure);
         Assert.Equal(InstructorErrors.SetRoleFailed, result.Error);
 
+        A.CallTo(() => _unitOfWork.CommitTransactionAsync(A<CancellationToken>.Ignored))
+            .MustNotHaveHappened();
+
         A.CallTo(() => _unitOfWork.RollbackTransactionAsync())
             .MustHaveHappenedOnceExactly();
     }
@@ -165,6 +189,9 @@ public class GetInstructorRoleCommandHandlerTest
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
+
+        A.CallTo(() => _unitOfWork.CommitTransactionAsync(A<CancellationToken>.Ignored))
+            .MustNotHaveHappened();
 
         A.CallTo(() => _unitOfWork.RollbackTransactionAsync())
             .MustHaveHappenedOnceExactly();
