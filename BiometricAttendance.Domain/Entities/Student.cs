@@ -14,9 +14,13 @@ public sealed class Student
     public List<StudentCourse> Courses { get; set; } = [];
 
     public string DepartmentName => Department.Name;
+    public bool CanPromote => Level < 5;
 
     public static Student Create(string userId, int level, int departmentId, int? fingerprintId = null)
     {
+        if (level > 5 || level <= 0)
+            throw new ArgumentOutOfRangeException(nameof(level));
+
         return new Student
         {
             UserId = userId,
@@ -24,5 +28,13 @@ public sealed class Student
             DepartmentId = departmentId,
             FingerprintId = fingerprintId
         };
+    }
+
+    public void Promote()
+    {
+        if (Level >= 5)
+            throw new InvalidOperationException("Student is already at the maximum level.");
+
+        Level++;
     }
 }
