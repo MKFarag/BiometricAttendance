@@ -4,6 +4,7 @@ using BiometricAttendance.Application.Features.Students.ChangeDepartment;
 using BiometricAttendance.Application.Features.Students.CompleteRegistration;
 using BiometricAttendance.Application.Features.Students.GetAll;
 using BiometricAttendance.Application.Features.Students.Promote;
+using BiometricAttendance.Application.Features.Students.ChangeLevel;
 
 namespace BiometricAttendance.Presentation.Controllers;
 
@@ -110,23 +111,62 @@ public class StudentsController(ISender sender) : ControllerBase
     /// Changes a student's department.
     /// </summary>
     /// <remarks>
-    /// Admins can move a student from one department to another existing department.
+    /// Admins can move a student from one department to another existing department.    
+    /// Sample request:
+    /// 
+    ///     PUT /api/Students/1/change-department
+    ///     {
+    ///       "departmentId": 2
+    ///     }
     /// </remarks>
     /// <param name="id">The id of the student.</param>
-    /// <param name="departmentId">The target department id.</param>
+    /// <param name="request">The request containing the target department ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>No content on success.</returns>
     /// <response code="204">If the student's department was changed successfully.</response>
     /// <response code="401">If the user is unauthorized.</response>
     /// <response code="404">If the student or department is not found.</response>
-    [HttpPut("{id}/department/{departmentId}")]
+    [HttpPut("{id}/change-department")]
     [HasPermission(Permissions.ChangeStudentDepartment)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ChangeDepartment([FromRoute] int id, [FromRoute] int departmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeDepartment([FromRoute] int id, [FromBody] ChangeStudentDepartmentRequest request, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new ChangeStudentDepartmentCommand(id, departmentId), cancellationToken);
+        var result = await _sender.Send(new ChangeStudentDepartmentCommand(id, request.DepartmentId), cancellationToken);
+
+        return result.IsSuccess
+            ? NoContent()
+            : result.ToProblem();
+    }
+
+    /// <summary>
+    /// Changes a student's level.
+    /// </summary>
+    /// <remarks>
+    /// Admins can move a student from one department to another existing department.    
+    /// Sample request:
+    /// 
+    ///     PUT /api/Students/1/change-level
+    ///     {
+    ///       "level": 2
+    ///     }
+    /// </remarks>
+    /// <param name="id">The id of the student.</param>
+    /// <param name="request">The request containing the target level.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content on success.</returns>
+    /// <response code="204">If the student's level was changed successfully.</response>
+    /// <response code="401">If the user is unauthorized.</response>
+    /// <response code="404">If the student is not found.</response>
+    [HttpPut("{id}/change-level")]
+    [HasPermission(Permissions.ChangeStudentDepartment)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ChangeLevel([FromRoute] int id, [FromBody] ChangeStudentLevelRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new ChangeStudentLevelCommand(id, request.Level), cancellationToken);
 
         return result.IsSuccess
             ? NoContent()

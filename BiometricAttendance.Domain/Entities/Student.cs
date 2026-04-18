@@ -4,16 +4,16 @@ public sealed class Student
 {
     public int Id { get; set; }
     public string UserId { get; set; } = string.Empty;
-    public int Level { get; set; }
-    public int DepartmentId { get; set; }
-    public int? FingerprintId { get; set; }
+    public int Level { get; private set; }
+    public int DepartmentId { get; private set; }
+    public int? FingerprintId { get; private set; }
 
-    public Department Department { get; set; } = default!;
-    public Fingerprint? Fingerprint { get; set; }
-    public List<Attendance> Attendances { get; set; } = [];
-    public List<StudentCourse> Courses { get; set; } = [];
+    public Department Department { get; private set; } = default!;
+    public Fingerprint? Fingerprint { get; private set; }
+    public List<Attendance> Attendances { get; private set; } = [];
+    public List<StudentCourse> Courses { get; private set; } = [];
 
-    public string DepartmentName => Department.Name;
+    public string? DepartmentName => Department?.Name;
     public bool CanPromote => Level < 5;
 
     public static Student Create(string userId, int level, int departmentId, int? fingerprintId = null)
@@ -30,10 +30,22 @@ public sealed class Student
         };
     }
 
+    public void ChangeLevel(int level)
+    {
+        if (level > 5 || level <= 0)
+            throw new ArgumentOutOfRangeException(nameof(level));
+
+        ResetData();
+
+        Level = level;
+    }
+
     public void ChangeDepartment(int newDepartmentId)
     {
         if (newDepartmentId == DepartmentId)
             throw new InvalidOperationException("Student is already in the specified department.");
+
+        ResetData();
 
         DepartmentId = newDepartmentId;
     }
@@ -43,6 +55,14 @@ public sealed class Student
         if (Level >= 5)
             throw new InvalidOperationException("Student is already at the maximum level.");
 
+        ResetData();
+
         Level++;
+    }
+
+    private void ResetData()
+    {
+        Attendances.Clear();
+        Courses.Clear();
     }
 }
