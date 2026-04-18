@@ -30,6 +30,14 @@ public sealed class Student
         };
     }
 
+    public void ChangeDepartment(int newDepartmentId)
+    {
+        if (newDepartmentId == DepartmentId)
+            throw new InvalidOperationException("Student is already in the specified department.");
+
+        DepartmentId = newDepartmentId;
+    }
+
     public void Promote()
     {
         if (Level >= 5)

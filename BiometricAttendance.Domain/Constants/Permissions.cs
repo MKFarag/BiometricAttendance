@@ -31,6 +31,14 @@ public static class Permissions
 
     #endregion
 
+    #region Students
+
+    public const string ReadStudent = "student:read";
+    public const string ChangeStudentDepartment = "student:change-department";
+    public const string PromoteStudent = "student:promote";
+
+    #endregion
+
     #region User
 
     public const string ReadUser = "user:read";

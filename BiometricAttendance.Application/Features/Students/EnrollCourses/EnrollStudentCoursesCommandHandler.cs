@@ -1,10 +1,10 @@
-﻿namespace BiometricAttendance.Application.Features.Students.AddCourses;
+﻿namespace BiometricAttendance.Application.Features.Students.EnrollCourses;
 
-public class AddStudentCoursesCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<AddStudentCoursesCommand, Result>
+public class EnrollStudentCoursesCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<EnrollStudentCoursesCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<Result> Handle(AddStudentCoursesCommand request, CancellationToken cancellationToken = default)
+    public async Task<Result> Handle(EnrollStudentCoursesCommand request, CancellationToken cancellationToken = default)
     {
         if (await _unitOfWork.Students.GetAsync([request.UserId], cancellationToken) is not { } student)
             return Result.Failure(UserErrors.NotFound);
