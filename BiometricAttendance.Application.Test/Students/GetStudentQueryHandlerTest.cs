@@ -42,49 +42,22 @@ public class GetStudentQueryHandlerTest : IClassFixture<MapsterTestFixture>
         var studentId = 1;
         var userId = Guid.CreateVersion7().ToString();
 
-        var department = new Department
-        {
-            Id = 10,
-            Name = "IT"
-        };
+        var department = Department.Create("IT"); 
+        department.Id = 10;
 
-        var course1 = new Course
-        {
-            Id = 100,
-            Name = "Algorithms",
-            Code = "CS301",
-            Level = 3
-        };
+        var course1 = Course.Create("Algorithms", "CS301", 3);
+        course1.Id = 100;
 
-        var course2 = new Course
-        {
-            Id = 101,
-            Name = "Databases",
-            Code = "CS302",
-            Level = 3
-        };
 
-        var student = new Student
-        {
-            Id = studentId,
-            UserId = userId,
-            Level = 3,
-            DepartmentId = department.Id,
-            Department = department,
-            Courses =
-            [
-                new StudentCourse { StudentId = studentId, CourseId = course1.Id, Course = course1 },
-                new StudentCourse { StudentId = studentId, CourseId = course2.Id, Course = course2 }
-            ]
-        };
+        var course2 = Course.Create("Databases", "CS302", 3);
+        course2.Id = 101;
 
-        var user = new User
-        {
-            Id = userId,
-            FirstName = "Mohamed",
-            LastName = "Khaled",
-            Email = "Mohamed@example.com"
-        };
+        var student = Student.Create(userId, 3, department.Id);
+        student.Id = studentId;
+        student.EnrollInCourses([course1.Id, course2.Id]);
+
+        var user = User.Create("Mohamed@example.com", "MohamedKhaled", "Mohamed", "Khaled");
+        user.Id = userId;
 
         A.CallTo(() => _studentRepo.FindAsync(
                 A<Expression<Func<Student, bool>>>.Ignored,

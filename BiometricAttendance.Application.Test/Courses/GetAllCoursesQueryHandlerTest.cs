@@ -20,8 +20,8 @@ public class GetAllCoursesQueryHandlerTest : IClassFixture<MapsterTestFixture>
     {
         var courses = new List<Course>
         {
-            new() { Id = 1, Name = "Math", Code = "MATH101", Level = 1 },
-            new() { Id = 2, Name = "Physics", Code = "PHY201", Level = 2 }
+            Course.Create("Math", "MATH101", 1),
+            Course.Create("Physics", "PHY201", 2)
         };
 
         A.CallTo(() => _cacheService.GetOrCreateAsync(

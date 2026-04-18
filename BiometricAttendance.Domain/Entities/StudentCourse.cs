@@ -7,4 +7,7 @@ public sealed class StudentCourse
 
     public Student Student { get; set; } = default!;
     public Course Course { get; set; } = default!;
+
+    public static StudentCourse Create(int studentId, int courseId)
+        => new() { StudentId = studentId, CourseId = courseId };
 }

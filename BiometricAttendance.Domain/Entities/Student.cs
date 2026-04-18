@@ -65,4 +65,26 @@ public sealed class Student
         Attendances.Clear();
         Courses.Clear();
     }
+
+    public void RemoveFingerprint()
+    {
+        FingerprintId = null;
+        Fingerprint = null;
+    }
+
+    public void AssignFingerprint(int fingerprintId)
+    {
+        FingerprintId = fingerprintId;
+    }
+
+    public void EnrollInCourses(IEnumerable<int> coursesId)
+    {
+        foreach (var courseId in coursesId)
+        {
+            if (Courses.Any(sc => sc.CourseId == courseId))
+                throw new InvalidOperationException("Student is already enrolled in the specified course.");
+
+            Courses.Add(StudentCourse.Create(Id, courseId));
+        }
+    }
 }

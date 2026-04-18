@@ -10,7 +10,7 @@ public class AddDepartmentCommandHandler(IUnitOfWork unitOfWork, ICacheService c
         if (await _unitOfWork.Departments.AnyAsync(x => string.Equals(x.Name, request.Name, StringComparison.OrdinalIgnoreCase), cancellationToken))
             return Result.Failure<DepartmentResponse>(DepartmentErrors.NameAlreadyExists);
 
-        var department = new Department { Name = request.Name };
+        var department = Department.Create(request.Name);
 
         await _unitOfWork.Departments.AddAsync(department, cancellationToken);
 

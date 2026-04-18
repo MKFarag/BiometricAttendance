@@ -10,7 +10,7 @@ public class ToggleUserStatusCommandHandler(IUnitOfWork unitOfWork, ICacheServic
         if (await _unitOfWork.Users.FindByIdAsync(request.Id, cancellationToken) is not { } user)
             return Result.Failure(UserErrors.NotFound);
 
-        user.IsDisabled = !user.IsDisabled;
+        user.ToggleStatus();
 
         var result = await _unitOfWork.Users.UpdateAsync(user);
 

@@ -52,7 +52,7 @@ public class AddCourseCommandHandlerTest
     public async Task Handle_PassValidData_ReturnsSuccess()
     {
         var request = new CourseRequest("Mathematics", "MATH101", 1);
-        var course = new Course { Name = request.Name, Code = request.Code, Level = request.Level };
+        var course = Course.Create(request.Name, request.Code, request.Level);
 
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .ReturnsNextFromSequence(false, false);

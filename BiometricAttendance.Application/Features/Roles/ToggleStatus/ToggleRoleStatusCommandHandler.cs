@@ -10,7 +10,7 @@ public class ToggleRoleStatusCommandHandler(IUnitOfWork unitOfWork, ICacheServic
         if (await _unitOfWork.Roles.GetAsync(request.Id, cancellationToken) is not { } role)
             return Result.Failure(RoleErrors.NotFound);
 
-        role.IsDisabled = !role.IsDisabled;
+        role.ToggleStatus();
 
         var result = await _unitOfWork.Roles.UpdateAsync(role);
 

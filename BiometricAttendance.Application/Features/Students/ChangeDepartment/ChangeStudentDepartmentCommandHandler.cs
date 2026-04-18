@@ -6,7 +6,15 @@ public class ChangeStudentDepartmentCommandHandler(IUnitOfWork unitOfWork) : IRe
 
     public async Task<Result> Handle(ChangeStudentDepartmentCommand request, CancellationToken cancellationToken = default)
     {
-        if (await _unitOfWork.Students.GetAsync([request.StudentId], cancellationToken) is not { } student)
+        var student = await _unitOfWork.Students
+            .FindAsync
+            (
+                x => x.Id == request.StudentId,
+                [nameof(Student.Attendances), nameof(Student.Courses)],
+                cancellationToken
+            );
+
+        if (student is null)
             return Result.Failure(StudentErrors.NotFound);
 
         if (student.DepartmentId == request.DepartmentId)

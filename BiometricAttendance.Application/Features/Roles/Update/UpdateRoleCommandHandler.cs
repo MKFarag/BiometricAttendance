@@ -18,7 +18,7 @@ public class UpdateRoleCommandHandler(IUnitOfWork unitOfWork, ICacheService cach
         if (command.Request.Permissions.Except(allowedPermissions).Any())
             return Result.Failure(RoleErrors.InvalidPermissions);
 
-        role.Name = command.Request.Name;
+        role.Update(command.Request.Name);
 
         try
         {

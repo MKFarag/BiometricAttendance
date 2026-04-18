@@ -9,8 +9,15 @@ public class EnrollStudentCoursesCommandHandler(IUnitOfWork unitOfWork) : IReque
         if (await _unitOfWork.Students.GetAsync([request.UserId], cancellationToken) is not { } student)
             return Result.Failure(UserErrors.NotFound);
 
-        var allowedCoursesId = await _unitOfWork.DepartmentCourses
-            .FindAllProjectionAsync(x => x.DepartmentId == student.DepartmentId, x => x.CourseId, true, cancellationToken);
+        var allowedCoursesId = await _unitOfWork.Courses
+            .FindAllProjectionAsync
+            (
+                x => x.Level == student.Level && x.DepartmentCourses.Any(dc => dc.DepartmentId == student.DepartmentId),
+                [nameof(Course.DepartmentCourses)],
+                x => x.Id, 
+                true, 
+                cancellationToken
+            );
 
         if (request.CoursesId.Except(allowedCoursesId).Any())
             return Result.Failure(StudentErrors.InvalidCourses);

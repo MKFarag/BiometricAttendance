@@ -6,7 +6,15 @@ public class PromoteStudentCommandHandler(IUnitOfWork unitOfWork) : IRequestHand
 
     public async Task<Result> Handle(PromoteStudentCommand request, CancellationToken cancellationToken = default)
     {
-        if (await _unitOfWork.Students.GetAsync([request.Id], cancellationToken) is not { } student)
+        var student = await _unitOfWork.Students
+            .FindAsync
+            (
+                x => x.Id == request.StudentId,
+                [nameof(Student.Attendances), nameof(Student.Courses)],
+                cancellationToken
+            );
+
+        if (student is null)
             return Result.Failure(StudentErrors.NotFound);
 
         if (!student.CanPromote)

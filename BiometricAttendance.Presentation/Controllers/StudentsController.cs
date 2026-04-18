@@ -5,6 +5,7 @@ using BiometricAttendance.Application.Features.Students.CompleteRegistration;
 using BiometricAttendance.Application.Features.Students.GetAll;
 using BiometricAttendance.Application.Features.Students.Promote;
 using BiometricAttendance.Application.Features.Students.ChangeLevel;
+using BiometricAttendance.Application.Features.Students.ForceRemove;
 
 namespace BiometricAttendance.Presentation.Controllers;
 
@@ -198,6 +199,32 @@ public class StudentsController(ISender sender) : ControllerBase
 
         return result.IsSuccess
             ? NoContent()
+            : result.ToProblem();
+    }
+
+    /// <summary>
+    /// Force removes a student from the system while keeping his user account.
+    /// </summary>
+    /// <remarks>
+    /// Admins can force remove a student at any time.
+    /// </remarks>
+    /// <param name="id">The id of the student.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content on success.</returns>
+    /// <response code="200">If the student was force removed successfully.</response>
+    /// <response code="401">If the user is unauthorized.</response>
+    /// <response code="404">If the student is not found.</response>
+    [HttpDelete("{id}/force-remove")]
+    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ForceRemove([FromRoute] int id, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new ForceRemoveStudentCommand(id), cancellationToken);
+
+        return result.IsSuccess
+            ? Ok()
             : result.ToProblem();
     }
 }
