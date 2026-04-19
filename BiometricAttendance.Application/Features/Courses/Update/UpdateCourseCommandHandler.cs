@@ -13,7 +13,7 @@ public class UpdateCourseCommandHandler(IUnitOfWork unitOfWork, ICacheService ca
         bool isNameEqual = string.Equals(request.Name, course.Name, StringComparison.OrdinalIgnoreCase);
         bool isCodeEqual = string.Equals(request.Code, course.Code, StringComparison.OrdinalIgnoreCase);
 
-        if (isNameEqual && isCodeEqual && request.Level == course.Level)
+        if (isNameEqual && isCodeEqual && request.DepartmentId == course.DepartmentId)
             return Result.Success();
 
         if (!isNameEqual && await _unitOfWork.Courses.AnyAsync(x => string.Equals(x.Name, request.Name, StringComparison.OrdinalIgnoreCase), cancellationToken))
@@ -22,7 +22,7 @@ public class UpdateCourseCommandHandler(IUnitOfWork unitOfWork, ICacheService ca
         if (!isCodeEqual && await _unitOfWork.Courses.AnyAsync(x => string.Equals(x.Code, request.Code, StringComparison.OrdinalIgnoreCase), cancellationToken))
             return Result.Failure(CourseErrors.CodeAlreadyExists);
 
-        course.Update(request.Name, request.Code, request.Level);
+        course.Update(request.Name, request.Code, request.DepartmentId);
 
         await _unitOfWork.CompleteAsync(cancellationToken);
 

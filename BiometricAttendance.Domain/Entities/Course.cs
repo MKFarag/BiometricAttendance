@@ -5,30 +5,24 @@ public sealed class Course
     public int Id { get; set; }
     public string Name { get; private set; } = string.Empty;
     public string Code { get; private set; } = string.Empty;
-    public int Level { get; private set; }
+    public int DepartmentId { get; private set; }
 
-    public List<DepartmentCourse> DepartmentCourses { get; private set; } = [];
+    public Department Department { get; private set; } = default!;
 
-    public static Course Create(string name, string code, int level)
+    public static Course Create(string name, string code, int departmentId)
     {
-        if (level > 5 || level <= 0)
-            throw new ArgumentOutOfRangeException(nameof(level));
-
         return new Course
         {
             Name = name,
             Code = code,
-            Level = level
+            DepartmentId = departmentId
         };
     }
 
-    public void Update(string name, string code, int level)
+    public void Update(string name, string code, int departmentId)
     {
-        if (level > 5 || level <= 0)
-            throw new ArgumentOutOfRangeException(nameof(level));
-
         Name = name;
         Code = code;
-        Level = level;
+        DepartmentId = departmentId;
     }
 }

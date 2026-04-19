@@ -8,7 +8,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Attendance> Attendances { get; set; }
     public DbSet<Course> Courses { get; set; }
     public DbSet<Department> Departments { get; set; }
-    public DbSet<DepartmentCourse> DepartmentCourses { get; set; }
     public DbSet<Fingerprint> Fingerprints { get; set; }
     public DbSet<InstructorPass> InstructorPasses { get; set; }
     public DbSet<Student> Students { get; set; }

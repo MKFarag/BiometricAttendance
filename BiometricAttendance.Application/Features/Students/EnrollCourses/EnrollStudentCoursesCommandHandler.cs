@@ -1,4 +1,4 @@
-﻿namespace BiometricAttendance.Application.Features.Students.EnrollCourses;
+namespace BiometricAttendance.Application.Features.Students.EnrollCourses;
 
 public class EnrollStudentCoursesCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<EnrollStudentCoursesCommand, Result>
 {
@@ -12,8 +12,8 @@ public class EnrollStudentCoursesCommandHandler(IUnitOfWork unitOfWork) : IReque
         var allowedCoursesId = await _unitOfWork.Courses
             .FindAllProjectionAsync
             (
-                x => x.Level == student.Level && x.DepartmentCourses.Any(dc => dc.DepartmentId == student.DepartmentId),
-                [nameof(Course.DepartmentCourses)],
+                x => x.DepartmentId == student.DepartmentId,
+                [],
                 x => x.Id, 
                 true, 
                 cancellationToken

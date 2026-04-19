@@ -1,4 +1,4 @@
-﻿using BiometricAttendance.Application.Contracts.Departments;
+using BiometricAttendance.Application.Contracts.Departments;
 using BiometricAttendance.Application.Features.Departments.Get;
 using System.Linq.Expressions;
 
@@ -8,14 +8,14 @@ public class GetDepartmentQueryHandlerTest
 {
     private readonly IUnitOfWork _unitOfWork = A.Fake<IUnitOfWork>();
     private readonly IGenericRepository<Department> _departmentRepo = A.Fake<IGenericRepository<Department>>();
-    private readonly IGenericRepository<DepartmentCourse> _departmentCourseRepo = A.Fake<IGenericRepository<DepartmentCourse>>();
+    private readonly IGenericRepository<Course> _courseRepo = A.Fake<IGenericRepository<Course>>();
     private readonly IStudentRepository _studentRepo = A.Fake<IStudentRepository>();
     private readonly GetDepartmentsQueryHandler _handler;
 
     public GetDepartmentQueryHandlerTest()
     {
         A.CallTo(() => _unitOfWork.Departments).Returns(_departmentRepo);
-        A.CallTo(() => _unitOfWork.DepartmentCourses).Returns(_departmentCourseRepo);
+        A.CallTo(() => _unitOfWork.Courses).Returns(_courseRepo);
         A.CallTo(() => _unitOfWork.Students).Returns(_studentRepo);
         _handler = new GetDepartmentsQueryHandler(_unitOfWork);
     }
@@ -53,7 +53,7 @@ public class GetDepartmentQueryHandlerTest
         A.CallTo(() => _studentRepo.CountAsync(A<Expression<Func<Student, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(departmentDetail.StudentsCount);
 
-        A.CallTo(() => _departmentCourseRepo.CountAsync(A<Expression<Func<DepartmentCourse, bool>>>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _courseRepo.CountAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(departmentDetail.CoursesCount);
 
         var query = new GetDepartmentsQuery(departmentId);

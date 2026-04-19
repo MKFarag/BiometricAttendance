@@ -4,6 +4,6 @@ public record CourseDetailResponse(
     int Id,
     string Name,
     string Code,
-    int Level,
-    IList<DepartmentResponse> Departments
+    int DepartmentId,
+    DepartmentResponse Department
 );

@@ -5,7 +5,6 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<Attendance> Attendances { get; }
     IGenericRepository<Course> Courses { get; }
     IGenericRepository<Department> Departments { get; }
-    IGenericRepository<DepartmentCourse> DepartmentCourses { get; }
     IGenericRepository<Fingerprint> Fingerprints { get; }
     IGenericRepository<InstructorPass> InstructorPasses { get; }
     IRoleRepository Roles { get; }

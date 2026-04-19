@@ -75,11 +75,11 @@ public class CoursesController(ISender sender) : ControllerBase
     ///     {
     ///       "name": "Mathematics",
     ///       "code": "MATH101",
-    ///       "level": 1
+    ///       "departmentId": 1
     ///     }
     ///
     /// </remarks>
-    /// <param name="request">The course creation request containing name, code and level.</param>
+    /// <param name="request">The course creation request containing name, code and departmentId.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The newly created course details.</returns>
     /// <response code="201">Returns the newly created course.</response>
@@ -96,7 +96,7 @@ public class CoursesController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Add([FromBody] CourseRequest request, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new AddCourseCommand(request.Name, request.Code, request.Level), cancellationToken);
+        var result = await _sender.Send(new AddCourseCommand(request.Name, request.Code, request.DepartmentId), cancellationToken);
 
         return result.IsSuccess
             ? CreatedAtAction(nameof(Get), new { result.Value.Id }, result.Value)
@@ -115,7 +115,7 @@ public class CoursesController(ISender sender) : ControllerBase
     ///     {
     ///       "name": "Advanced Mathematics",
     ///       "code": "MATH201",
-    ///       "level": 2
+    ///       "departmentId": 2
     ///     }
     ///
     /// </remarks>
@@ -139,7 +139,7 @@ public class CoursesController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] CourseRequest request, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new UpdateCourseCommand(id, request.Name, request.Code, request.Level), cancellationToken);
+        var result = await _sender.Send(new UpdateCourseCommand(id, request.Name, request.Code, request.DepartmentId), cancellationToken);
 
         return result.IsSuccess
             ? NoContent()

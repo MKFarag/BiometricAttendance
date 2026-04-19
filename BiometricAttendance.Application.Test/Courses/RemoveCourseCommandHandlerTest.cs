@@ -6,7 +6,6 @@ public class RemoveCourseCommandHandlerTest
 {
     private readonly IUnitOfWork _unitOfWork = A.Fake<IUnitOfWork>();
     private readonly IGenericRepository<Course> _courseRepo = A.Fake<IGenericRepository<Course>>();
-    private readonly IGenericRepository<DepartmentCourse> _departmentCourseRepo = A.Fake<IGenericRepository<DepartmentCourse>>();
     private readonly IGenericRepository<StudentCourse> _studentCourseRepo = A.Fake<IGenericRepository<StudentCourse>>();
     private readonly ICacheService _cacheService = A.Fake<ICacheService>();
     private readonly RemoveCourseCommandHandler _handler;
@@ -14,7 +13,6 @@ public class RemoveCourseCommandHandlerTest
     public RemoveCourseCommandHandlerTest()
     {
         A.CallTo(() => _unitOfWork.Courses).Returns(_courseRepo);
-        A.CallTo(() => _unitOfWork.DepartmentCourses).Returns(_departmentCourseRepo);
         A.CallTo(() => _unitOfWork.StudentCourses).Returns(_studentCourseRepo);
         _handler = new RemoveCourseCommandHandler(_unitOfWork, _cacheService);
     }
@@ -37,13 +35,10 @@ public class RemoveCourseCommandHandlerTest
     }
 
     [Fact]
-    public async Task Handle_WhenCourseInUseInBothDepartmentAndStudentCourses_ReturnsInUseError()
+    public async Task Handle_WhenCourseInUseInStudentCourses_ReturnsInUseError()
     {
         // Arrange
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
-            .Returns(true);
-
-        A.CallTo(() => _departmentCourseRepo.AnyAsync(A<Expression<Func<DepartmentCourse, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
         A.CallTo(() => _studentCourseRepo.AnyAsync(A<Expression<Func<StudentCourse, bool>>>.Ignored, A<CancellationToken>.Ignored))
@@ -62,36 +57,6 @@ public class RemoveCourseCommandHandlerTest
             .MustNotHaveHappened();
     }
 
-    [Fact]
-    public async Task Handle_WhenCourseInUseInOnlyOneSide_ReturnsSuccess()
-    {
-        // Arrange
-        A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
-            .Returns(true);
-
-        A.CallTo(() => _departmentCourseRepo.AnyAsync(A<Expression<Func<DepartmentCourse, bool>>>.Ignored, A<CancellationToken>.Ignored))
-            .Returns(true);
-
-        A.CallTo(() => _studentCourseRepo.AnyAsync(A<Expression<Func<StudentCourse, bool>>>.Ignored, A<CancellationToken>.Ignored))
-            .Returns(false);
-
-        A.CallTo(() => _courseRepo.ExecuteDeleteAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
-            .Returns(Task.CompletedTask);
-
-        A.CallTo(() => _cacheService.RemoveByTagAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
-            .Returns(Task.CompletedTask);
-
-        var command = new RemoveCourseCommand(1);
-
-        // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        Assert.True(result.IsSuccess);
-
-        A.CallTo(() => _courseRepo.ExecuteDeleteAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
-            .MustHaveHappenedOnceExactly();
-    }
 
     [Fact]
     public async Task Handle_WhenPassValidData_ReturnsSuccess()
@@ -99,9 +64,6 @@ public class RemoveCourseCommandHandlerTest
         // Arrange
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
-
-        A.CallTo(() => _departmentCourseRepo.AnyAsync(A<Expression<Func<DepartmentCourse, bool>>>.Ignored, A<CancellationToken>.Ignored))
-            .Returns(false);
 
         A.CallTo(() => _studentCourseRepo.AnyAsync(A<Expression<Func<StudentCourse, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(false);

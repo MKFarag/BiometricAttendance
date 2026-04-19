@@ -3,7 +3,7 @@ namespace BiometricAttendance.Application.Contracts.Courses;
 public record CourseRequest(
     string Name,
     string Code,
-    int Level
+    int DepartmentId
 );
 
 #region Validation
@@ -24,7 +24,7 @@ public class CourseRequestValidator : AbstractValidator<CourseRequest>
             .WithMessage("You must enter only letters, numbers, and underscores")
             .MaximumLength(25);
 
-        RuleFor(x => x.Level)
+        RuleFor(x => x.DepartmentId)
             .GreaterThan(0);
     }
 }

@@ -4,5 +4,5 @@ public record CourseResponse(
     int Id,
     string Name,
     string Code,
-    int Level
+    int DepartmentId
 );

@@ -9,12 +9,10 @@ public class GetCourseQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<Get
         if (await _unitOfWork.Courses.GetAsync([request.Id], cancellationToken) is not { } course)
             return Result.Failure<CourseDetailResponse>(CourseErrors.NotFound);
 
-        var departmentsId = await _unitOfWork.DepartmentCourses
-            .FindAllProjectionAsync(x => x.CourseId == course.Id, x => x.DepartmentId, true, cancellationToken);
+        if (await _unitOfWork.Departments.GetAsync([course.DepartmentId], cancellationToken) is not { } department)
+            return Result.Failure<CourseDetailResponse>(DepartmentErrors.NotFound);
 
-        var departments = await _unitOfWork.Departments.FindAllAsync(d => departmentsId.Contains(d.Id), cancellationToken);
-
-        var response = new CourseDetailResponse(course.Id, course.Name, course.Code, course.Level, departments.Adapt<IList<DepartmentResponse>>());
+        var response = new CourseDetailResponse(course.Id, course.Name, course.Code, course.DepartmentId, department.Adapt<DepartmentResponse>());
 
         return Result.Success(response);
     }

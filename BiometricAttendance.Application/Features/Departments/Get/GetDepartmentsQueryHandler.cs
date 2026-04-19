@@ -1,4 +1,4 @@
-﻿namespace BiometricAttendance.Application.Features.Departments.Get;
+namespace BiometricAttendance.Application.Features.Departments.Get;
 
 public class GetDepartmentsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetDepartmentsQuery, Result<DepartmentDetailResponse>>
 {
@@ -10,7 +10,7 @@ public class GetDepartmentsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandle
             return Result.Failure<DepartmentDetailResponse>(DepartmentErrors.NotFound);
 
         var studentsCount = await _unitOfWork.Students.CountAsync(x => x.DepartmentId == department.Id, cancellationToken);
-        var coursesCount = await _unitOfWork.DepartmentCourses.CountAsync(x => x.DepartmentId == department.Id, cancellationToken);
+        var coursesCount = await _unitOfWork.Courses.CountAsync(x => x.DepartmentId == department.Id, cancellationToken);
 
         var response = new DepartmentDetailResponse(department.Id, department.Name, studentsCount, coursesCount);
 
