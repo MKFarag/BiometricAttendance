@@ -18,12 +18,12 @@ public class GetRoleQueryHandlerTest
     public async Task Handle_WhenRoleNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var role = new Role { Id = Guid.CreateVersion7().ToString() };
+        var roleId = Guid.CreateVersion7().ToString();
 
         A.CallTo(() => _roleRepo.GetAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns((Role?)null);
 
-        var query = new GetRoleQuery(role.Id);
+        var query = new GetRoleQuery(roleId);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -37,7 +37,8 @@ public class GetRoleQueryHandlerTest
     public async Task Handle_ValidId_ReturnsRole()
     {
         // Arrange
-        var role = new Role { Id = Guid.CreateVersion7().ToString(), Name = "role-name" };
+        var roleId = Guid.CreateVersion7().ToString();
+        var role = Role.Create("role-name");
         var permissions = new List<string> { Permissions.ReadRole };
 
         A.CallTo(() => _roleRepo.GetAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
@@ -46,7 +47,7 @@ public class GetRoleQueryHandlerTest
         A.CallTo(() => _roleRepo.GetClaimsAsync(A<string>.Ignored, A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(permissions);
 
-        var query = new GetRoleQuery(role.Id);
+        var query = new GetRoleQuery(roleId);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);

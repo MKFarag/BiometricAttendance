@@ -60,7 +60,7 @@ public sealed class Student
         Level++;
     }
 
-    private void ResetData()
+    public void ResetData()
     {
         Attendances.Clear();
         Courses.Clear();

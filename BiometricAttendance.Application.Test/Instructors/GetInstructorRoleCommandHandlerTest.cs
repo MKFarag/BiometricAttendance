@@ -19,13 +19,13 @@ public class GetInstructorRoleCommandHandlerTest
     public async Task Handle_WhenUserNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var user = new User { Id = Guid.CreateVersion7().ToString() };
+        var userId = Guid.CreateVersion7().ToString();
         var pass = "pass";
 
         A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns((User?)null);
 
-        var command = new GetInstructorRoleCommand(user.Id, pass);
+        var command = new GetInstructorRoleCommand(userId, pass);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

@@ -294,7 +294,7 @@ public class UserRepository(ApplicationDbContext context, UserManager<Applicatio
         if (userRefreshToken is null)
             return Result.Failure(UserErrors.InvalidRefreshToken);
 
-        userRefreshToken.RevokedOn = DateTime.UtcNow;
+        userRefreshToken.Revoke();
 
         await _context.SaveChangesAsync(cancellationToken);
 

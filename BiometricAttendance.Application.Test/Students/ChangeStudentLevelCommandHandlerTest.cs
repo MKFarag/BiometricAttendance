@@ -1,5 +1,4 @@
-﻿using BiometricAttendance.Application.Features.Students.ChangeDepartment;
-using BiometricAttendance.Application.Features.Students.ChangeLevel;
+﻿using BiometricAttendance.Application.Features.Students.ChangeLevel;
 
 namespace BiometricAttendance.Application.Test.Students;
 
@@ -19,7 +18,7 @@ public class ChangeStudentLevelCommandHandlerTest
     public async Task Handle_WhenStudentNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        A.CallTo(() => _studentsRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns((Student?)null);
 
         var command = new ChangeStudentLevelCommand(1, 2);
@@ -38,7 +37,7 @@ public class ChangeStudentLevelCommandHandlerTest
         // Arrange
         var student = Student.Create(Guid.CreateVersion7().ToString(), 2, 3, null);
 
-        A.CallTo(() => _studentsRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(student);
 
         var command = new ChangeStudentLevelCommand(1, student.Level);
@@ -59,13 +58,13 @@ public class ChangeStudentLevelCommandHandlerTest
         // Arrange
         var student = Student.Create(Guid.CreateVersion7().ToString(), 2, 3);
 
-        A.CallTo(() => _studentsRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(student);
 
         A.CallTo(() => _unitOfWork.CompleteAsync(A<CancellationToken>.Ignored))
             .Returns(1);
 
-        var command = new ChangeStudentLevelCommand(student.Id, 4);
+        var command = new ChangeStudentLevelCommand(1, 4);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

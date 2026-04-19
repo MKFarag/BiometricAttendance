@@ -1,12 +1,26 @@
-﻿namespace BiometricAttendance.Domain.Entities;
+﻿using System.Security.Cryptography;
 
-public class RefreshToken
+namespace BiometricAttendance.Domain.Entities;
+
+public sealed class RefreshToken
 {
-    public string Token { get; set; } = string.Empty;
-    public DateTime ExpiresOn { get; set; }
-    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
-    public DateTime? RevokedOn { get; set; }
+    private const int _expiryDays = 14;
+    public static int AutoRemoveAfterDays => 7;
+
+    public string Token { get; private set; } = string.Empty;
+    public DateTime ExpiresOn { get; private set; }
+    public DateTime CreatedOn { get; private set; }
+    public DateTime? RevokedOn { get; private set; }
 
     public bool IsExpired => DateTime.UtcNow >= ExpiresOn;
     public bool IsActive => RevokedOn is null && !IsExpired;
+
+    public static RefreshToken Create() => new()
+    {
+        Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+        ExpiresOn = DateTime.UtcNow.AddDays(_expiryDays),
+        CreatedOn = DateTime.UtcNow
+    };
+
+    public void Revoke() => RevokedOn = DateTime.UtcNow;
 }

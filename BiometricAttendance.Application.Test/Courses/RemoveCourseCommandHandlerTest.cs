@@ -22,13 +22,16 @@ public class RemoveCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenCourseNotFound_ReturnsNotFoundError()
     {
-        var command = new RemoveCourseCommand(1);
-
+        // Arrange
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(false);
 
+        var command = new RemoveCourseCommand(1);
+
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(CourseErrors.NotFound, result.Error);
     }
@@ -36,8 +39,7 @@ public class RemoveCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenCourseInUseInBothDepartmentAndStudentCourses_ReturnsInUseError()
     {
-        var command = new RemoveCourseCommand(1);
-
+        // Arrange
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
@@ -47,8 +49,12 @@ public class RemoveCourseCommandHandlerTest
         A.CallTo(() => _studentCourseRepo.AnyAsync(A<Expression<Func<StudentCourse, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
+        var command = new RemoveCourseCommand(1);
+
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(CourseErrors.InUse, result.Error);
 
@@ -59,8 +65,7 @@ public class RemoveCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenCourseInUseInOnlyOneSide_ReturnsSuccess()
     {
-        var command = new RemoveCourseCommand(1);
-
+        // Arrange
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
@@ -76,8 +81,12 @@ public class RemoveCourseCommandHandlerTest
         A.CallTo(() => _cacheService.RemoveByTagAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
 
+        var command = new RemoveCourseCommand(1);
+
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsSuccess);
 
         A.CallTo(() => _courseRepo.ExecuteDeleteAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
@@ -87,8 +96,7 @@ public class RemoveCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenPassValidData_ReturnsSuccess()
     {
-        var command = new RemoveCourseCommand(1);
-
+        // Arrange
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
@@ -104,8 +112,12 @@ public class RemoveCourseCommandHandlerTest
         A.CallTo(() => _cacheService.RemoveByTagAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
 
+        var command = new RemoveCourseCommand(1);
+
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsSuccess);
 
         A.CallTo(() => _courseRepo.ExecuteDeleteAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))

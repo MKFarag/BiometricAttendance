@@ -22,7 +22,7 @@ public class UpdateCourseCommandHandler(IUnitOfWork unitOfWork, ICacheService ca
         if (!isCodeEqual && await _unitOfWork.Courses.AnyAsync(x => string.Equals(x.Code, request.Code, StringComparison.OrdinalIgnoreCase), cancellationToken))
             return Result.Failure(CourseErrors.CodeAlreadyExists);
 
-        course = request.Adapt(course);
+        course.Update(request.Name, request.Code, request.Level);
 
         await _unitOfWork.CompleteAsync(cancellationToken);
 

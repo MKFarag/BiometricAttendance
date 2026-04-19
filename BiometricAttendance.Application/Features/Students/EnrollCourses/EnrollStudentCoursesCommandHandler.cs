@@ -22,7 +22,7 @@ public class EnrollStudentCoursesCommandHandler(IUnitOfWork unitOfWork) : IReque
         if (request.CoursesId.Except(allowedCoursesId).Any())
             return Result.Failure(StudentErrors.InvalidCourses);
 
-        var studentCourses = request.CoursesId.Select(courseId => new StudentCourse { CourseId = courseId, StudentId = student.Id });
+        var studentCourses = request.CoursesId.Select(courseId => StudentCourse.Create(student.Id, courseId));
 
         await _unitOfWork.StudentCourses.AddRangeAsync(studentCourses, cancellationToken);
         await _unitOfWork.CompleteAsync(cancellationToken);

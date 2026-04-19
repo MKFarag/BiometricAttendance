@@ -16,7 +16,7 @@ public class UpdateDepartmentCommandHandler(IUnitOfWork unitOfWork, ICacheServic
         if (await _unitOfWork.Departments.AnyAsync(x => string.Equals(x.Name, request.Name, StringComparison.OrdinalIgnoreCase), cancellationToken))
             return Result.Failure(DepartmentErrors.NameAlreadyExists);
 
-        department = request.Adapt(department);
+        department.Update(request.Name);
 
         await _unitOfWork.CompleteAsync(cancellationToken);
 

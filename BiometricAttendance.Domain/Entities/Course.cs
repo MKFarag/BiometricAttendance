@@ -21,4 +21,14 @@ public sealed class Course
             Level = level
         };
     }
+
+    public void Update(string name, string code, int level)
+    {
+        if (level > 5 || level <= 0)
+            throw new ArgumentOutOfRangeException(nameof(level));
+
+        Name = name;
+        Code = code;
+        Level = level;
+    }
 }

@@ -42,7 +42,7 @@ public class UpdateRoleCommandHandlerTest
         // Arrange
         var roleId = Guid.CreateVersion7().ToString();
         var roleRequest = new RoleRequest("ExistRole", [Permissions.ReadRole]);
-        var role = new Role { Id = roleId, Name = "Role" };
+        var role = Role.Create("Role");
 
         A.CallTo(() => _roleRepo.GetAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(role);
@@ -66,7 +66,7 @@ public class UpdateRoleCommandHandlerTest
         // Arrange
         var roleId = Guid.CreateVersion7().ToString();
         var roleRequest = new RoleRequest("Role", ["invalid:permission"]);
-        var role = new Role { Id = roleId, Name = "Role" };
+        var role = Role.Create("Role");
 
         A.CallTo(() => _roleRepo.GetAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(role);
@@ -91,7 +91,7 @@ public class UpdateRoleCommandHandlerTest
         var roleId = Guid.CreateVersion7().ToString();
         var permissions = new List<string> { Permissions.ReadRole };
         var roleRequest = new RoleRequest("Role", permissions);
-        var role = new Role { Id = roleId, Name = "Role" };
+        var role = Role.Create("Role");
 
         A.CallTo(() => _roleRepo.GetAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(role);
@@ -149,7 +149,7 @@ public class UpdateRoleCommandHandlerTest
         var currentPermissions = new List<string> { Permissions.ReadRole, Permissions.AddRole };
         var newPermissions = new List<string> { Permissions.ReadRole, Permissions.UpdateRole };
         var roleRequest = new RoleRequest("NewRoleName", newPermissions);
-        var role = new Role { Id = roleId, Name = "Role" };
+        var role = Role.Create("Role");
 
         A.CallTo(() => _roleRepo.GetAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(role);
@@ -211,7 +211,7 @@ public class UpdateRoleCommandHandlerTest
         // Arrange
         var roleId = Guid.CreateVersion7().ToString();
         var roleRequest = new RoleRequest("Role", [Permissions.ReadRole]);
-        var role = new Role { Id = roleId, Name = "Role" };
+        var role = Role.Create("Role");
 
         A.CallTo(() => _roleRepo.GetAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(role);
@@ -256,7 +256,7 @@ public class UpdateRoleCommandHandlerTest
         // Arrange
         var roleId = Guid.CreateVersion7().ToString();
         var roleRequest = new RoleRequest("Role", [Permissions.ReadRole]);
-        var role = new Role { Id = roleId, Name = "Role" };
+        var role = Role.Create("Role");
 
         A.CallTo(() => _roleRepo.GetAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(role);

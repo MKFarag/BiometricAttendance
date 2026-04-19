@@ -44,7 +44,7 @@ public class UpdateUserCommandHandlerTest
         // Arrange
         var userId = Guid.CreateVersion7().ToString();
         var updateUserRequest = new UpdateUserRequest("First", "Last", "ExistEmail@test.com", "UserName", ["Role"]);
-        var user = new User { Id = userId, FirstName = "First", LastName = "Last", Email = "Email@test.com", UserName = "UserName" };
+        var user = User.Create("Email@test.com", "UserName", "First", "Last");
 
         A.CallTo(() => _userRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
@@ -68,7 +68,7 @@ public class UpdateUserCommandHandlerTest
         // Arrange
         var userId = Guid.CreateVersion7().ToString();
         var updateUserRequest = new UpdateUserRequest("First", "Last", "Email@test.com", "ExistUserName", ["Role"]);
-        var user = new User { Id = userId, FirstName = "First", LastName = "Last", Email = "Email@test.com", UserName = "UserName" };
+        var user = User.Create("Email@test.com", "UserName", "First", "Last");
 
         A.CallTo(() => _userRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
@@ -95,7 +95,7 @@ public class UpdateUserCommandHandlerTest
         // Arrange
         var userId = Guid.CreateVersion7().ToString();
         var updateUserRequest = new UpdateUserRequest("First", "Last", "Email@test.com", "UserName", ["InvalidRole"]);
-        var user = updateUserRequest.Adapt<User>();
+        var user = User.Create("Email@test.com", "UserName", "First", "Last");
 
         A.CallTo(() => _userRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
@@ -126,7 +126,7 @@ public class UpdateUserCommandHandlerTest
         var userId = Guid.CreateVersion7().ToString();
         var roles = new List<string> { "Role" };
         var updateUserRequest = new UpdateUserRequest("First", "Last", "Email@test.com", "UserName", roles);
-        var user = updateUserRequest.Adapt<User>();
+        var user = User.Create("Email@test.com", "UserName", "First", "Last");
 
         A.CallTo(() => _userRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
@@ -186,7 +186,7 @@ public class UpdateUserCommandHandlerTest
         var userId = Guid.CreateVersion7().ToString();
         var roles = new List<string> { "Role_1", "Role_2" };
         var updateUserRequest = new UpdateUserRequest("First", "Last", "NewEmail@test.com", "NewUserName", [roles.First()]);
-        var user = new User { Id = userId, FirstName = "First", LastName = "Last", Email = "Email@test.com", UserName = "UserName" };
+        var user = User.Create("Email@test.com", "UserName", "First", "Last");
 
         A.CallTo(() => _userRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);

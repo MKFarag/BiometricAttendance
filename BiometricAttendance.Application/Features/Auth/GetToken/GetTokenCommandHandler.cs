@@ -22,16 +22,11 @@ public class GetTokenCommandHandler(IUnitOfWork unitOfWork, IJwtProvider jwtProv
 
         var (token, expiresIn) = _jwtProvider.GenerateToken(user, userRoles, userPermissions);
 
-        var refreshToken = RefreshTokenHandler.GenerateNewToken();
-        var refreshTokenExpiration = DateTime.UtcNow.AddDays(RefreshTokenHandler.ExpiryDays);
+        var refreshToken = RefreshToken.Create();
 
-        await _unitOfWork.Users.AddRefreshTokenAsync(user, new RefreshToken
-        {
-            Token = refreshToken,
-            ExpiresOn = refreshTokenExpiration
-        }, cancellationToken);
+        await _unitOfWork.Users.AddRefreshTokenAsync(user, refreshToken, cancellationToken);
 
-        var response = new AuthResponse(user.Id, user.Email, user.UserName, user.FirstName, user.LastName, token, expiresIn, refreshToken, refreshTokenExpiration);
+        var response = new AuthResponse(user.Id, user.Email, user.UserName, user.FirstName, user.LastName, token, expiresIn, refreshToken.Token, refreshToken.ExpiresOn);
 
         return Result.Success(response);
     }

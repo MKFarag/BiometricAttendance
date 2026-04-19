@@ -23,7 +23,7 @@ public class UpdateUserCommandHandler(IUnitOfWork unitOfWork, ICacheService cach
         if (command.Request.Roles.Except(allowedRoles).Any())
             return Result.Failure(UserErrors.InvalidRoles);
 
-        user = command.Request.Adapt(user);
+        user.Update(command.Request.Email, command.Request.UserName, command.Request.FirstName, command.Request.LastName);
 
         var result = await _unitOfWork.Users.UpdateAsync(user);
 

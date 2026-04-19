@@ -14,5 +14,13 @@ public sealed class User
     public static User Create(string email, string userName, string firstName, string lastName)
             => new() { Email = email, UserName = userName, FirstName = firstName, LastName = lastName };
 
+    public void Update(string email, string userName, string firstName, string lastName)
+    {
+        Email = email;
+        UserName = userName;
+        FirstName = firstName;
+        LastName = lastName;
+    }
+
     public void ToggleStatus() => IsDisabled = !IsDisabled;
 }

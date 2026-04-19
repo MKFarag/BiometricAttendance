@@ -18,13 +18,16 @@ public class UpdateCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenCourseNotFound_ReturnsNotFoundError()
     {
-        var command = new UpdateCourseCommand(1, "Math", "MATH101", 1);
-
+        // Arrange
         A.CallTo(() => _courseRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns((Course?)null);
 
+        var command = new UpdateCourseCommand(1, "Math", "MATH101", 1);
+
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(CourseErrors.NotFound, result.Error);
     }
@@ -32,14 +35,18 @@ public class UpdateCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenAllValuesEqualsCurrentValues_ReturnsSuccessWithoutChanges()
     {
-        var course = new Course { Id = 1, Name = "Math", Code = "MATH101", Level = 1 };
-        var command = new UpdateCourseCommand(course.Id, "math", "math101", 1);
+        // Arrange
+        var course = Course.Create("Math", "MATH101", 1);
 
         A.CallTo(() => _courseRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(course);
 
+        var command = new UpdateCourseCommand(1, "math", "math101", 1);
+
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsSuccess);
 
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
@@ -55,8 +62,8 @@ public class UpdateCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenNameAlreadyExists_ReturnsNameAlreadyExistsError()
     {
-        var course = new Course { Id = 1, Name = "Math", Code = "MATH101", Level = 1 };
-        var command = new UpdateCourseCommand(course.Id, "Physics", "MATH101", 1);
+        // Arrange
+        var course = Course.Create("Math", "MATH101", 1);
 
         A.CallTo(() => _courseRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(course);
@@ -64,8 +71,12 @@ public class UpdateCourseCommandHandlerTest
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
+        var command = new UpdateCourseCommand(course.Id, "Physics", "MATH101", 1);
+
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(CourseErrors.NameAlreadyExists, result.Error);
     }
@@ -73,8 +84,8 @@ public class UpdateCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenCodeAlreadyExists_ReturnsCodeAlreadyExistsError()
     {
-        var course = new Course { Id = 1, Name = "Math", Code = "MATH101", Level = 1 };
-        var command = new UpdateCourseCommand(course.Id, "Math", "PHY201", 1);
+        // Arrange
+        var course = Course.Create("Math", "MATH101", 1);
 
         A.CallTo(() => _courseRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(course);
@@ -82,8 +93,12 @@ public class UpdateCourseCommandHandlerTest
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
+        var command = new UpdateCourseCommand(course.Id, "Math", "PHY201", 1);
+
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(CourseErrors.CodeAlreadyExists, result.Error);
     }
@@ -91,8 +106,8 @@ public class UpdateCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenPassValidData_ReturnsSuccess()
     {
-        var course = new Course { Id = 1, Name = "Math", Code = "MATH101", Level = 1 };
-        var command = new UpdateCourseCommand(course.Id, "Physics", "PHY201", 2);
+        // Arrange
+        var course = Course.Create("Math", "MATH101", 1);
 
         A.CallTo(() => _courseRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(course);
@@ -106,8 +121,12 @@ public class UpdateCourseCommandHandlerTest
         A.CallTo(() => _cacheService.RemoveByTagAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
 
+        var command = new UpdateCourseCommand(course.Id, "Physics", "PHY201", 2);
+
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsSuccess);
 
         A.CallTo(() => _unitOfWork.CompleteAsync(A<CancellationToken>.Ignored))

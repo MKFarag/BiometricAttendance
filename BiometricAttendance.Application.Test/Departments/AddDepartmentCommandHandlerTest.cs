@@ -40,7 +40,7 @@ public class AddDepartmentCommandHandlerTest
     {
         // Arrange
         var request = new DepartmentRequest("Name");
-        var department = new Department { Name = request.Name };
+        var department = Department.Create(request.Name);
 
         A.CallTo(() => _departmentRepo.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(false);

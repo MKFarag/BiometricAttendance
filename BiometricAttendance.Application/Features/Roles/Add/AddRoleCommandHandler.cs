@@ -15,7 +15,7 @@ public class AddRoleCommandHandler(IUnitOfWork unitOfWork, ICacheService cacheSe
         if (command.Request.Permissions.Except(allowedPermissions).Any())
             return Result.Failure<RoleDetailResponse>(RoleErrors.InvalidPermissions);
 
-        var role = command.Request.Adapt<Role>();
+        var role = Role.Create(command.Request.Name);
 
         try
         {

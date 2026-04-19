@@ -1,4 +1,4 @@
-using BiometricAttendance.Application.Helpers;
+using BiometricAttendance.Domain.Entities;
 using BiometricAttendance.Domain.Repositories;
 using BiometricAttendance.Presentation;
 using Hangfire;
@@ -54,7 +54,7 @@ app.MapHangfireDashboard("/jobs", new DashboardOptions
 RecurringJob.AddOrUpdate<IUserRepository>(
     "RemoveExpiredRefreshTokens",
     x => x.RemoveExpiredRefreshTokensAsync(),
-    Cron.DayInterval(RefreshTokenHandler.AutoRemoveAfterDays));
+    Cron.DayInterval(RefreshToken.AutoRemoveAfterDays));
 
 app.UseCors();
 

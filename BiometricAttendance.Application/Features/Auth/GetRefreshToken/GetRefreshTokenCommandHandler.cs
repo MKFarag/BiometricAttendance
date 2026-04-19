@@ -27,16 +27,11 @@ public class GetRefreshTokenCommandHandler(IUnitOfWork unitOfWork, IJwtProvider 
         var (userRoles, userPermissions) = await _unitOfWork.Users.GetRolesAndPermissionsAsync(user, cancellationToken);
 
         var (newToken, expiresIn) = _jwtProvider.GenerateToken(user, userRoles, userPermissions);
-        var newRefreshToken = RefreshTokenHandler.GenerateNewToken();
-        var refreshTokenExpiration = DateTime.UtcNow.AddDays(RefreshTokenHandler.ExpiryDays);
+        var newRefreshToken = RefreshToken.Create();
 
-        await _unitOfWork.Users.AddRefreshTokenAsync(user, new RefreshToken
-        {
-            Token = newRefreshToken,
-            ExpiresOn = refreshTokenExpiration
-        }, cancellationToken);
+        await _unitOfWork.Users.AddRefreshTokenAsync(user, newRefreshToken, cancellationToken);
 
-        var response = new AuthResponse(user.Id, user.Email, user.UserName, user.FirstName, user.LastName, newToken, expiresIn, newRefreshToken, refreshTokenExpiration);
+        var response = new AuthResponse(user.Id, user.Email, user.UserName, user.FirstName, user.LastName, newToken, expiresIn, newRefreshToken.Token, newRefreshToken.ExpiresOn);
 
         return Result.Success(response);
     }

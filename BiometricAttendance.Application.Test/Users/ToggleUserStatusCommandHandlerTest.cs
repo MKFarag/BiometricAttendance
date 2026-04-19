@@ -56,6 +56,7 @@ public class ToggleUserStatusCommandHandlerTest
 
         // Assert
         Assert.True(result.IsSuccess);
+        Assert.Equal(user?.IsDisabled, true);
 
         A.CallTo(() => _userRepo.UpdateAsync(A<User>.Ignored))
             .MustHaveHappenedOnceExactly();

@@ -19,10 +19,10 @@ public class UpdateDepartmentCommandHandlerTest
     public async Task Handle_WhenDepartmentNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var command = new UpdateDepartmentCommand(1, "IT");
-
         A.CallTo(() => _departmentRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns((Department?)null);
+
+        var command = new UpdateDepartmentCommand(1, "IT");
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -36,11 +36,12 @@ public class UpdateDepartmentCommandHandlerTest
     public async Task Handle_WhenNameEqualsCurrentName_ReturnsSuccessWithoutChanges()
     {
         // Arrange
-        var department = new Department { Id = 1, Name = "IT" };
-        var command = new UpdateDepartmentCommand(department.Id, "it");
+        var department = Department.Create("IT");
 
         A.CallTo(() => _departmentRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(department);
+
+        var command = new UpdateDepartmentCommand(1, "it");
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -62,14 +63,15 @@ public class UpdateDepartmentCommandHandlerTest
     public async Task Handle_WhenNameAlreadyExists_ReturnsNameAlreadyExistsError()
     {
         // Arrange
-        var department = new Department { Id = 1, Name = "IT" };
-        var command = new UpdateDepartmentCommand(department.Id, "CS");
+        var department = Department.Create("IT");
 
         A.CallTo(() => _departmentRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(department);
 
         A.CallTo(() => _departmentRepo.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
+
+        var command = new UpdateDepartmentCommand(1, "CS");
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -83,8 +85,7 @@ public class UpdateDepartmentCommandHandlerTest
     public async Task Handle_WhenPassValidData_ReturnsSuccess()
     {
         // Arrange
-        var department = new Department { Id = 1, Name = "IT" };
-        var command = new UpdateDepartmentCommand(department.Id, "CS");
+        var department = Department.Create("IT");
 
         A.CallTo(() => _departmentRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(department);
@@ -97,6 +98,8 @@ public class UpdateDepartmentCommandHandlerTest
 
         A.CallTo(() => _cacheService.RemoveByTagAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
+
+        var command = new UpdateDepartmentCommand(1, "CS");
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

@@ -23,10 +23,10 @@ public class RemoveDepartmentCommandHandlerTest
     public async Task Handle_WhenDepartmentNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var command = new RemoveDepartmentCommand(1);
-
         A.CallTo(() => _departmentRepo.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(false);
+
+        var command = new RemoveDepartmentCommand(1);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -40,8 +40,6 @@ public class RemoveDepartmentCommandHandlerTest
     public async Task Handle_WhenDepartmentInUseInOnlyOne_ReturnsInUseError()
     {
         // Arrange
-        var command = new RemoveDepartmentCommand(1);
-
         A.CallTo(() => _departmentRepo.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
@@ -50,6 +48,8 @@ public class RemoveDepartmentCommandHandlerTest
 
         A.CallTo(() => _studentRepo.AnyAsync(A<Expression<Func<Student, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
+
+        var command = new RemoveDepartmentCommand(1);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -66,8 +66,6 @@ public class RemoveDepartmentCommandHandlerTest
     public async Task Handle_WhenDepartmentInUseInBoth_ReturnsInUseError()
     {
         // Arrange
-        var command = new RemoveDepartmentCommand(1);
-
         A.CallTo(() => _departmentRepo.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
@@ -76,6 +74,8 @@ public class RemoveDepartmentCommandHandlerTest
 
         A.CallTo(() => _studentRepo.AnyAsync(A<Expression<Func<Student, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
+
+        var command = new RemoveDepartmentCommand(1);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -92,8 +92,6 @@ public class RemoveDepartmentCommandHandlerTest
     public async Task Handle_WhenPassValidData_ReturnsSuccess()
     {
         // Arrange
-        var command = new RemoveDepartmentCommand(1);
-
         A.CallTo(() => _departmentRepo.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(true);
 
@@ -105,6 +103,8 @@ public class RemoveDepartmentCommandHandlerTest
 
         A.CallTo(() => _cacheService.RemoveByTagAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
+
+        var command = new RemoveDepartmentCommand(1);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

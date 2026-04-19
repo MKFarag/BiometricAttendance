@@ -19,12 +19,12 @@ public class ToggleRoleStatusCommandHandlerTest
     public async Task Handle_WhenRoleNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var role = new Role { Id = Guid.CreateVersion7().ToString() };
+        var roleId = Guid.CreateVersion7().ToString();
 
         A.CallTo(() => _roleRepo.GetAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns((Role?)null);
 
-        var command = new ToggleRoleStatusCommand(role.Id);
+        var command = new ToggleRoleStatusCommand(roleId);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -38,7 +38,8 @@ public class ToggleRoleStatusCommandHandlerTest
     public async Task Handle_ValidId_ReturnsSuccess()
     {
         // Arrange
-        var role = new Role { Id = Guid.CreateVersion7().ToString() };
+        var roleId = Guid.CreateVersion7().ToString();
+        var role = Role.Create("role-name");
 
         A.CallTo(() => _roleRepo.GetAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(role);
@@ -49,7 +50,7 @@ public class ToggleRoleStatusCommandHandlerTest
         A.CallTo(() => _cacheService.RemoveByTagAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(Task.CompletedTask);
 
-        var command = new ToggleRoleStatusCommand(role.Id);
+        var command = new ToggleRoleStatusCommand(roleId);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

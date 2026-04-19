@@ -47,7 +47,6 @@ public class ForceRemoveStudentCommandHandlerTest
     {
         // Arrange
         var student = Student.Create(Guid.CreateVersion7().ToString(), 2, 1);
-        student.Id = 10;
 
         A.CallTo(() => _studentsRepo.FindAsync(
                 A<Expression<Func<Student, bool>>>.Ignored,
@@ -58,7 +57,7 @@ public class ForceRemoveStudentCommandHandlerTest
         A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns((User?)null);
 
-        var command = new ForceRemoveStudentCommand(student.Id);
+        var command = new ForceRemoveStudentCommand(10);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -76,7 +75,6 @@ public class ForceRemoveStudentCommandHandlerTest
     {
         // Arrange
         var student = Student.Create(Guid.CreateVersion7().ToString(), 4, 2, 7);
-        student.Id = 30;
         student.Attendances.Add(new Attendance());
         student.Courses.Add(new StudentCourse());
 
@@ -91,6 +89,8 @@ public class ForceRemoveStudentCommandHandlerTest
                 A<CancellationToken>.Ignored))
             .Returns(student);
 
+        A.CallTo(() => _studentsRepo.Delete(A<Student>.Ignored));
+
         A.CallTo(() => _usersRepo.FindByIdAsync(A<string>.Ignored, A<CancellationToken>.Ignored))
             .Returns(user);
 
@@ -103,7 +103,7 @@ public class ForceRemoveStudentCommandHandlerTest
         A.CallTo(() => _unitOfWork.CompleteAsync(A<CancellationToken>.Ignored))
             .Returns(1);
 
-        var command = new ForceRemoveStudentCommand(student.Id);
+        var command = new ForceRemoveStudentCommand(10);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -112,19 +112,18 @@ public class ForceRemoveStudentCommandHandlerTest
         Assert.True(result.IsSuccess);
         Assert.Null(student.Fingerprint);
         Assert.Null(student.FingerprintId);
+        Assert.Empty(student.Attendances);
+        Assert.Empty(student.Courses);
 
-        A.CallTo(() => _attendancesRepo.DeleteRange(student.Attendances))
-            .MustHaveHappenedOnceExactly();
-        A.CallTo(() => _studentCoursesRepo.DeleteRange(student.Courses))
-            .MustHaveHappenedOnceExactly();
-        A.CallTo(() => _fingerprintsRepo.Delete(fingerprint))
-            .MustHaveHappenedOnceExactly();
         A.CallTo(() => _studentsRepo.Delete(student))
             .MustHaveHappenedOnceExactly();
+
         A.CallTo(() => _usersRepo.DeleteAllRolesAsync(user))
             .MustHaveHappenedOnceExactly();
+
         A.CallTo(() => _usersRepo.AddToRoleAsync(A<User>.Ignored, A<string>.Ignored))
             .MustHaveHappenedOnceExactly();
+
         A.CallTo(() => _unitOfWork.CompleteAsync(A<CancellationToken>.Ignored))
             .MustHaveHappenedOnceExactly();
     }

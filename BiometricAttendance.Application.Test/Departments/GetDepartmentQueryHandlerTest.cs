@@ -24,12 +24,12 @@ public class GetDepartmentQueryHandlerTest
     public async Task Handle_WhenDepartmentNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var department = new Department { Id = 1 };
+        var departmentId = 1;
 
         A.CallTo(() => _departmentRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns((Department?)null);
 
-        var query = new GetDepartmentsQuery(department.Id);
+        var query = new GetDepartmentsQuery(departmentId);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -43,7 +43,8 @@ public class GetDepartmentQueryHandlerTest
     public async Task Handle_ValidId_ReturnsDepartment()
     {
         // Arrange
-        var department = new Department { Id = 1, Name = "department" };
+        var departmentId = 1;
+        var department = Department.Create("IT");
         var departmentDetail = new DepartmentDetailResponse(department.Id, department.Name, 3, 2);
 
         A.CallTo(() => _departmentRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
@@ -55,7 +56,7 @@ public class GetDepartmentQueryHandlerTest
         A.CallTo(() => _departmentCourseRepo.CountAsync(A<Expression<Func<DepartmentCourse, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(departmentDetail.CoursesCount);
 
-        var query = new GetDepartmentsQuery(department.Id);
+        var query = new GetDepartmentsQuery(departmentId);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);

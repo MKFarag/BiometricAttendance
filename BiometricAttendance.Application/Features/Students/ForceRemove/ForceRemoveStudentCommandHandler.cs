@@ -17,11 +17,8 @@ public class ForceRemoveStudentCommandHandler(IUnitOfWork unitOfWork) : IRequest
         if (student is null)
             return Result.Failure(StudentErrors.NotFound);
 
-        if (student.Attendances.Count != 0)
-            _unitOfWork.Attendances.DeleteRange(student.Attendances);
-
-        if (student.Courses.Count != 0)
-            _unitOfWork.StudentCourses.DeleteRange(student.Courses);
+        if (student.Attendances.Count != 0 || student.Courses.Count != 0)
+            student.ResetData();
 
         if (student.Fingerprint is not null)
         {

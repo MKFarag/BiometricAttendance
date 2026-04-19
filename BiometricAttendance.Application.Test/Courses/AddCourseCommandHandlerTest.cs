@@ -19,6 +19,7 @@ public class AddCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenNameIsExist_ReturnsNameAlreadyExistsError()
     {
+        // Arrange
         var request = new CourseRequest("Mathematics", "MATH101", 1);
 
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
@@ -26,8 +27,10 @@ public class AddCourseCommandHandlerTest
 
         var command = new AddCourseCommand(request.Name, request.Code, request.Level);
 
+        // Act
         var result = await _handler.Handle(command);
 
+        // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(result.Error, CourseErrors.NameAlreadyExists);
     }
@@ -35,6 +38,7 @@ public class AddCourseCommandHandlerTest
     [Fact]
     public async Task Handle_WhenCodeIsExist_ReturnsCodeAlreadyExistsError()
     {
+        // Arrange
         var request = new CourseRequest("Mathematics", "MATH101", 1);
 
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
@@ -42,8 +46,10 @@ public class AddCourseCommandHandlerTest
 
         var command = new AddCourseCommand(request.Name, request.Code, request.Level);
 
+        // Act
         var result = await _handler.Handle(command);
 
+        // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(result.Error, CourseErrors.CodeAlreadyExists);
     }
@@ -51,6 +57,7 @@ public class AddCourseCommandHandlerTest
     [Fact]
     public async Task Handle_PassValidData_ReturnsSuccess()
     {
+        // Arrange
         var request = new CourseRequest("Mathematics", "MATH101", 1);
         var course = Course.Create(request.Name, request.Code, request.Level);
 
@@ -68,8 +75,10 @@ public class AddCourseCommandHandlerTest
 
         var command = new AddCourseCommand(request.Name, request.Code, request.Level);
 
+        // Act
         var result = await _handler.Handle(command);
 
+        // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(result.Value.Name, course.Name);
         Assert.Equal(result.Value.Code, course.Code);

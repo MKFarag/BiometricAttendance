@@ -18,7 +18,7 @@ public class AddUserCommandHandler(IUnitOfWork unitOfWork, ICacheService cacheSe
         if (command.Request.Roles.Except(allowedRoles).Any())
             return Result.Failure<UserResponse>(UserErrors.InvalidRoles);
 
-        var user = command.Request.Adapt<User>();
+        var user = User.Create(command.Request.Email, command.Request.UserName, command.Request.FirstName, command.Request.LastName);
 
         var result = await _unitOfWork.Users.CreateAsync(user, command.Request.Password, true);
 

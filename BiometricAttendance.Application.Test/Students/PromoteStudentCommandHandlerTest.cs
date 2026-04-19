@@ -18,10 +18,10 @@ public class PromoteStudentCommandHandlerTest
     public async Task Handle_WhenStudentNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var command = new PromoteStudentCommand(1);
-
-        A.CallTo(() => _studentsRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns((Student?)null);
+
+        var command = new PromoteStudentCommand(1);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -36,10 +36,11 @@ public class PromoteStudentCommandHandlerTest
     {
         // Arrange
         var student = Student.Create(Guid.CreateVersion7().ToString(), 5, 1);
-        var command = new PromoteStudentCommand(student.Id);
 
-        A.CallTo(() => _studentsRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(student);
+
+        var command = new PromoteStudentCommand(1);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -57,13 +58,14 @@ public class PromoteStudentCommandHandlerTest
     {
         // Arrange
         var student = Student.Create(Guid.CreateVersion7().ToString(), 3, 1);
-        var command = new PromoteStudentCommand(student.Id);
 
-        A.CallTo(() => _studentsRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(student);
 
         A.CallTo(() => _unitOfWork.CompleteAsync(A<CancellationToken>.Ignored))
             .Returns(1);
+
+        var command = new PromoteStudentCommand(1);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

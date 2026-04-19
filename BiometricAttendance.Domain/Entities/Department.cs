@@ -7,4 +7,7 @@ public sealed class Department
 
     public static Department Create(string name)
         => new() { Name = name };
+
+    public void Update(string name)
+        => Name = name;
 }

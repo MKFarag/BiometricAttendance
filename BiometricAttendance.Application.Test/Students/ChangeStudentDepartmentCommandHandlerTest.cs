@@ -20,10 +20,10 @@ public class ChangeStudentDepartmentCommandHandlerTest
     public async Task Handle_WhenStudentNotFound_ReturnsNotFoundError()
     {
         // Arrange
-        var command = new ChangeStudentDepartmentCommand(1, 2);
-
-        A.CallTo(() => _studentsRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns((Student?)null);
+
+        var command = new ChangeStudentDepartmentCommand(1, 2);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -38,10 +38,11 @@ public class ChangeStudentDepartmentCommandHandlerTest
     {
         // Arrange
         var student = Student.Create(Guid.CreateVersion7().ToString(), 2, 3);
-        var command = new ChangeStudentDepartmentCommand(student.Id, student.DepartmentId);
 
-        A.CallTo(() => _studentsRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(student);
+
+        var command = new ChangeStudentDepartmentCommand(1, student.DepartmentId);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -61,13 +62,14 @@ public class ChangeStudentDepartmentCommandHandlerTest
     {
         // Arrange
         var student = Student.Create(Guid.CreateVersion7().ToString(), 2, 3);
-        var command = new ChangeStudentDepartmentCommand(student.Id, 7);
 
-        A.CallTo(() => _studentsRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(student);
 
         A.CallTo(() => _departmentsRepo.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .Returns(false);
+
+        var command = new ChangeStudentDepartmentCommand(1, 7);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -82,9 +84,8 @@ public class ChangeStudentDepartmentCommandHandlerTest
     {
         // Arrange
         var student = Student.Create(Guid.CreateVersion7().ToString(), 2, 3);
-        var command = new ChangeStudentDepartmentCommand(student.Id, 7);
 
-        A.CallTo(() => _studentsRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(student);
 
         A.CallTo(() => _departmentsRepo.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
@@ -92,6 +93,8 @@ public class ChangeStudentDepartmentCommandHandlerTest
 
         A.CallTo(() => _unitOfWork.CompleteAsync(A<CancellationToken>.Ignored))
             .Returns(1);
+
+        var command = new ChangeStudentDepartmentCommand(1, 7);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
