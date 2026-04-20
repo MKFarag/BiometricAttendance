@@ -25,7 +25,7 @@ public class GetCourseQueryHandlerTest
         // Arrange
         var courseId = 1;
 
-        A.CallTo(() => _courseRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _courseRepo.FindAsync(A<Expression<Func<Course, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns((Course?)null);
 
         var query = new GetCourseQuery(courseId);
@@ -43,14 +43,9 @@ public class GetCourseQueryHandlerTest
     {
         // Arrange
         var course = Course.Create("Math", "MATH101", 1);
-        var department = Department.Create("Science");
-        var courseDetail = new CourseDetailResponse(course.Id, course.Name, course.Code, course.DepartmentId, department.Adapt<DepartmentResponse>());
 
-        A.CallTo(() => _courseRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
+        A.CallTo(() => _courseRepo.FindAsync(A<Expression<Func<Course, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(course);
-
-        A.CallTo(() => _departmentRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))
-            .Returns(department);
 
         var query = new GetCourseQuery(1);
 
@@ -61,7 +56,5 @@ public class GetCourseQueryHandlerTest
         Assert.True(result.IsSuccess);
         Assert.Equal(result.Value.Name, course.Name);
         Assert.Equal(result.Value.Code, course.Code);
-        Assert.Equal(result.Value.DepartmentId, course.DepartmentId);
-        Assert.Equal(result.Value.Department.Name, courseDetail.Department.Name);
     }
 }

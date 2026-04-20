@@ -12,15 +12,22 @@ public class UpdateCourseCommandHandler(IUnitOfWork unitOfWork, ICacheService ca
 
         bool isNameEqual = string.Equals(request.Name, course.Name, StringComparison.OrdinalIgnoreCase);
         bool isCodeEqual = string.Equals(request.Code, course.Code, StringComparison.OrdinalIgnoreCase);
+        bool isDepartmentEqual = request.DepartmentId == course.DepartmentId;
 
-        if (isNameEqual && isCodeEqual && request.DepartmentId == course.DepartmentId)
+        if (isNameEqual && isCodeEqual && isDepartmentEqual)
             return Result.Success();
 
-        if (!isNameEqual && await _unitOfWork.Courses.AnyAsync(x => string.Equals(x.Name, request.Name, StringComparison.OrdinalIgnoreCase), cancellationToken))
+        if (!isNameEqual 
+            && await _unitOfWork.Courses.AnyAsync(x => string.Equals(x.Name, request.Name, StringComparison.OrdinalIgnoreCase), cancellationToken))
             return Result.Failure(CourseErrors.NameAlreadyExists);
 
-        if (!isCodeEqual && await _unitOfWork.Courses.AnyAsync(x => string.Equals(x.Code, request.Code, StringComparison.OrdinalIgnoreCase), cancellationToken))
+        if (!isCodeEqual 
+            && await _unitOfWork.Courses.AnyAsync(x => string.Equals(x.Code, request.Code, StringComparison.OrdinalIgnoreCase), cancellationToken))
             return Result.Failure(CourseErrors.CodeAlreadyExists);
+
+        if (!isDepartmentEqual 
+            && !await _unitOfWork.Departments.AnyAsync(x => x.Id == request.DepartmentId, cancellationToken))
+            return Result.Failure(DepartmentErrors.NotFound);
 
         course.Update(request.Name, request.Code, request.DepartmentId);
 

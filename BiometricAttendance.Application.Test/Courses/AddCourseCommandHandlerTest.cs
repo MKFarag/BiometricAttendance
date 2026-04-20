@@ -55,6 +55,28 @@ public class AddCourseCommandHandlerTest
     }
 
     [Fact]
+    public async Task Handle_WhenDepartmentNotFound_ReturnsDepartmentNotFoundError()
+    {
+        // Arrange
+        var request = new CourseRequest("Mathematics", "MATH101", 1);
+
+        A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
+            .ReturnsNextFromSequence(false, false);
+
+        A.CallTo(() => _unitOfWork.Departments.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
+            .Returns(false);
+
+        var command = new AddCourseCommand(request.Name, request.Code, request.DepartmentId);
+
+        // Act
+        var result = await _handler.Handle(command);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(result.Error, DepartmentErrors.NotFound);
+    }
+
+    [Fact]
     public async Task Handle_PassValidData_ReturnsSuccess()
     {
         // Arrange
@@ -63,6 +85,9 @@ public class AddCourseCommandHandlerTest
 
         A.CallTo(() => _courseRepo.AnyAsync(A<Expression<Func<Course, bool>>>.Ignored, A<CancellationToken>.Ignored))
             .ReturnsNextFromSequence(false, false);
+
+        A.CallTo(() => _unitOfWork.Departments.AnyAsync(A<Expression<Func<Department, bool>>>.Ignored, A<CancellationToken>.Ignored))
+            .Returns(true);
 
         A.CallTo(() => _courseRepo.AddAsync(A<Course>.Ignored, A<CancellationToken>.Ignored))
             .Returns(course);
@@ -82,7 +107,6 @@ public class AddCourseCommandHandlerTest
         Assert.True(result.IsSuccess);
         Assert.Equal(result.Value.Name, course.Name);
         Assert.Equal(result.Value.Code, course.Code);
-        Assert.Equal(result.Value.DepartmentId, course.DepartmentId);
 
         A.CallTo(() => _courseRepo.AddAsync(A<Course>.Ignored, A<CancellationToken>.Ignored))
             .MustHaveHappenedOnceExactly();

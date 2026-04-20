@@ -13,6 +13,9 @@ public class AddCourseCommandHandler(IUnitOfWork unitOfWork, ICacheService cache
         if (await _unitOfWork.Courses.AnyAsync(x => string.Equals(x.Code, request.Code, StringComparison.OrdinalIgnoreCase), cancellationToken))
             return Result.Failure<CourseResponse>(CourseErrors.CodeAlreadyExists);
 
+        if (!await _unitOfWork.Departments.AnyAsync(x => x.Id == request.DepartmentId, cancellationToken))
+            return Result.Failure<CourseResponse>(DepartmentErrors.NotFound);
+
         var course = Course.Create(request.Name, request.Code, request.DepartmentId);
 
         await _unitOfWork.Courses.AddAsync(course, cancellationToken);

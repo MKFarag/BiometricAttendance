@@ -46,7 +46,6 @@ public class EnrollStudentCoursesCommandHandlerTest
 
         A.CallTo(() => _coursesRepo.FindAllProjectionAsync(
                 A<Expression<Func<Course, bool>>>.Ignored,
-                A<string[]>.Ignored,
                 A<Expression<Func<Course, int>>>.Ignored,
                 A<bool>.Ignored,
                 A<CancellationToken>.Ignored))
@@ -81,7 +80,6 @@ public class EnrollStudentCoursesCommandHandlerTest
 
         A.CallTo(() => _coursesRepo.FindAllProjectionAsync(
                 A<Expression<Func<Course, bool>>>.Ignored,
-                A<string[]>.Ignored,
                 A<Expression<Func<Course, int>>>.Ignored,
                 A<bool>.Ignored,
                 A<CancellationToken>.Ignored))

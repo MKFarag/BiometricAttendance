@@ -4,6 +4,5 @@ public record CourseDetailResponse(
     int Id,
     string Name,
     string Code,
-    int DepartmentId,
     DepartmentResponse Department
 );
