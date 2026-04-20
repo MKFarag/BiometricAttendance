@@ -14,3 +14,4 @@ global using FluentValidation;
 global using Mapster;
 global using BiometricAttendance.Application.Contracts.Departments;
 global using BiometricAttendance.Application.Contracts.Students;
+global using BiometricAttendance.Application.Contracts.Attendances;

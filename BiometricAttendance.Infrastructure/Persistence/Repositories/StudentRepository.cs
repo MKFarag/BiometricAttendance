@@ -22,7 +22,7 @@ public class StudentRepository(ApplicationDbContext context) : GenericRepository
             _context.Users,
             student => student.UserId,
             user => user.Id,
-            (student, user) => new StudentWithUserDto(student.Id, $"{user.FirstName} {user.LastName}", user.Email!, student.Level, student.DepartmentName)
+            (student, user) => new StudentWithUserDto(student.Id, $"{user.FirstName} {user.LastName}", user.Email!, student.Level, student.DepartmentName ?? string.Empty)
             );
 
         var paginatedList = await PaginatedList<StudentWithUserDto>.CreateAsync(joinedQuery, pageNumber, pageSize, cancellationToken);
@@ -30,5 +30,28 @@ public class StudentRepository(ApplicationDbContext context) : GenericRepository
         var response = PaginatedList<TProjection>.CopyWithNewItems(paginatedList.Items.Adapt<List<TProjection>>(), paginatedList);
 
         return response;
+    }
+
+    public async Task<IEnumerable<Student>> FindAllWithNameAsync(Expression<Func<Student, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        var query = _context.Students
+            .AsNoTracking()
+            .AsQueryable()
+            .Where(predicate)
+            .ApplyIncludesSafely([nameof(Student.Department)]);
+
+        var studentsWithFullName = await query.Join
+        (
+        _context.Users,
+        student => student.UserId,
+        user => user.Id,
+        (student, user) => new { student, FullName = $"{user.FirstName} {user.LastName}" }
+        )
+        .ToListAsync(cancellationToken);
+
+        foreach (var student in studentsWithFullName)
+            student.student.SetName(student.FullName);
+
+        return studentsWithFullName.Select(s => s.student);
     }
 }

@@ -10,4 +10,7 @@ public sealed class Attendance
 
     public Student Student { get; private set; } = default!;
     public Course Course { get; private set; } = default!;
+
+    public static Attendance Create(int studentId, int courseId, int weekNumber)
+        => new() { StudentId = studentId, CourseId = courseId, WeekNumber = weekNumber };
 }

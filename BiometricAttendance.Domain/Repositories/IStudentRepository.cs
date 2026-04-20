@@ -14,4 +14,6 @@ public interface IStudentRepository : IGenericRepository<Student>
     Task<IPaginatedList<TProjection>> GetPaginatedListAsync<TProjection>(
         int pageNumber, int pageSize, string primaryKey, string? searchValue, string? searchColumn,
         ColumnType searchColumnType, CancellationToken cancellationToken = default) where TProjection : class;
+
+    Task<IEnumerable<Student>> FindAllWithNameAsync(Expression<Func<Student, bool>> predicate, CancellationToken cancellationToken = default);
 }

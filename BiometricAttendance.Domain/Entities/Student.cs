@@ -1,3 +1,5 @@
+using System.Runtime.Serialization;
+
 namespace BiometricAttendance.Domain.Entities;
 
 public sealed class Student
@@ -12,6 +14,9 @@ public sealed class Student
     public Fingerprint? Fingerprint { get; private set; }
     public List<Attendance> Attendances { get; private set; } = [];
     public List<StudentCourse> Courses { get; private set; } = [];
+
+    [IgnoreDataMember]
+    public string? Name { get; private set; }
 
     public string? DepartmentName => Department?.Name;
     public bool CanPromote => Level < 5;
@@ -29,6 +34,9 @@ public sealed class Student
             FingerprintId = fingerprintId
         };
     }
+
+    public void SetName(string name)
+        => Name = name;
 
     public void ChangeLevel(int level)
     {
@@ -64,6 +72,15 @@ public sealed class Student
     {
         Attendances.Clear();
         Courses.Clear();
+    }
+
+    public void SetFingerprint(Fingerprint fingerprint)
+    {
+        if (FingerprintId.HasValue)
+            throw new InvalidOperationException("Student already has a fingerprint assigned.");
+
+        Fingerprint = fingerprint;
+        FingerprintId = fingerprint.Id;
     }
 
     public void RemoveFingerprint()
