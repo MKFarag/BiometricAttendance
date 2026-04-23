@@ -1,8 +1,8 @@
 namespace BiometricAttendance.Infrastructure.Persistence.Configurations;
 
-internal sealed class FingerprintConfiguration : IEntityTypeConfiguration<Fingerprint>
+internal sealed class FingerprintConfiguration : IEntityTypeConfiguration<Domain.Entities.Fingerprint>
 {
-    public void Configure(EntityTypeBuilder<Fingerprint> builder)
+    public void Configure(EntityTypeBuilder<Domain.Entities.Fingerprint> builder)
     {
         builder
             .HasIndex(x => x.StudentId)

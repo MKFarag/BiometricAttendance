@@ -21,6 +21,22 @@ public class JobManager : IJobManager
         => BackgroundJob.Enqueue(methodCall);
 
     /// <summary>
+    /// Creates a new fire-and-forget job based on a given method call expression.
+    /// </summary>
+    /// <param name="methodCall">Method call expression that will be marshalled to a server.</param>
+    /// <returns>Unique identifier of a background job.</returns>
+    public string Enqueue<T>(Expression<Action<T>> methodCall)
+        => BackgroundJob.Enqueue<T>(methodCall);
+
+    /// <summary>
+    /// Creates a new fire-and-forget job based on a given method call expression.
+    /// </summary>
+    /// <param name="methodCall">Method call expression that will be marshalled to a server.</param>
+    /// <returns>Unique identifier of a background job.</returns>
+    public string Enqueue<T>(Expression<Func<T, Task>> methodCall)
+        => BackgroundJob.Enqueue<T>(methodCall);
+
+    /// <summary>
     /// Creates a new background job based on a specified method call expression and schedules it to be enqueued after a given delay.
     /// </summary>
     /// <param name="methodCall">Instance method call expression that will be marshalled to the Server.</param>

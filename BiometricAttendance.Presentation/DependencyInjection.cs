@@ -49,8 +49,6 @@ public static class DependencyInjection
             services.AddScoped<IUrlEncoder, UrlEncoder>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddSingleton<FingerprintState>();
-
             services.AddHealthChecks()
                 .AddSqlServer(connectionString: configuration.GetConnectionString("DefaultConnection")!, name: "Database")
                 .AddHangfire(options => { options.MinimumAvailableServers = 1; }, name: "Hangfire")

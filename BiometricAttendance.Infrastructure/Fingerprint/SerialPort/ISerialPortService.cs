@@ -1,4 +1,4 @@
-﻿namespace BiometricAttendance.Application.Interfaces;
+﻿namespace BiometricAttendance.Infrastructure.Fingerprint.SerialPort;
 
 public interface ISerialPortService
 {
@@ -8,5 +8,5 @@ public interface ISerialPortService
     void Start();
     void Stop();
     void SendCommand(string command);
-    void DeleteLastValue();
+    void ResetLastScan();
 }

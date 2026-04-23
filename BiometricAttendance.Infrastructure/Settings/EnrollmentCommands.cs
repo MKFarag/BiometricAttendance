@@ -1,4 +1,4 @@
-namespace BiometricAttendance.Application.Settings;
+namespace BiometricAttendance.Infrastructure.Settings;
 
 /// <summary>
 /// Serial-port command strings sent to the fingerprint reader to control enrollment mode.

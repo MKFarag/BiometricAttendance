@@ -12,6 +12,6 @@ internal sealed class StudentConfiguration : IEntityTypeConfiguration<Student>
         builder
             .HasOne(s => s.Fingerprint)
             .WithOne(f => f.Student)
-            .HasForeignKey<Fingerprint>(f => f.StudentId);
+            .HasForeignKey<Domain.Entities.Fingerprint>(f => f.StudentId);
     }
 }

@@ -1,9 +1,7 @@
-using BiometricAttendance.Application.Settings;
+using BiometricAttendance.Infrastructure.Fingerprint;
 using BiometricAttendance.Infrastructure.Messaging;
-using BiometricAttendance.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace BiometricAttendance.Infrastructure;
 
@@ -29,13 +27,7 @@ public static class DependencyInjection
 
             services.AddCQRSConfig(typeof(INotificationService).Assembly);
 
-            services.AddOptions<EnrollmentCommands>()
-                .BindConfiguration(EnrollmentCommands.SectionName)
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
-
-            //services.AddSingleton<ISerialPortService>(provider =>
-            //    new SerialPortService("COM3", 9600, provider.GetRequiredService<ILogger<SerialPortService>>()));
+            services.AddFingerprintConfig(configuration);
 
             return services;
         }
@@ -60,6 +52,29 @@ public static class DependencyInjection
                 foreach (var (iface, impl) in handlers)
                     services.AddScoped(iface, impl);
             }
+
+            return services;
+        }
+
+        private IServiceCollection AddFingerprintConfig(IConfiguration configuration)
+        {
+            services.AddOptions<EnrollmentCommands>()
+                .BindConfiguration(EnrollmentCommands.SectionName)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+            services.AddSingleton<ISerialPortService>(provider =>
+            {
+                var portName = configuration["SerialPort:PortName"]!;
+                var baudRate = configuration.GetValue<int>("SerialPort:BaudRate");
+                var logger = provider.GetRequiredService<ILogger<SerialPortService>>();
+
+                return new SerialPortService(portName, baudRate, logger);
+            });
+
+            services.AddSingleton<FingerprintStatus>();
+
+            services.AddScoped<IFingerprintService, FingerprintService>();
 
             return services;
         }

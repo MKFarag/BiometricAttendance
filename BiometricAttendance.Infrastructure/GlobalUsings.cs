@@ -25,3 +25,5 @@ global using System.Reflection;
 global using System.Security.Claims;
 global using System.Text;
 global using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
+global using BiometricAttendance.Infrastructure.Fingerprint.SerialPort;
+global using Microsoft.Extensions.Logging;
