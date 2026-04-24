@@ -7,10 +7,13 @@ public class FingerprintRegisterCommandHandler(IUnitOfWork unitOfWork, IJobManag
 
     public async Task<Result> Handle(FingerprintRegisterCommand request, CancellationToken cancellationToken = default)
     {
-        if (!await _unitOfWork.Students.AnyAsync(x => x.Id == request.StudentId, cancellationToken))
+        if (await _unitOfWork.Students.GetAsync([request.StudentId], cancellationToken) is not { } student)
             return Result.Failure(StudentErrors.NotFound);
 
-        _jobManager.Enqueue<IFingerprintService>(x => x.ExecuteEnrollmentJob(request.StudentId));
+        if (student.FingerprintId.HasValue)
+            return Result.Failure(StudentErrors.HasFingerprintId);
+
+        _jobManager.Enqueue<IFingerprintService>(x => x.ExecuteEnrollmentJob(student.Id));
 
         return Result.Success();
     }

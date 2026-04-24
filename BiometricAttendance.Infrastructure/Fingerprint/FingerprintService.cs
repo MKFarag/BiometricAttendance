@@ -2,13 +2,13 @@
 
 public sealed class FingerprintService(
     ISerialPortService serialPortService, IOptions<EnrollmentCommands> enrollmentOptions, FingerprintStatus fingerprintStatus,
-    ILogger<FingerprintService> logger, IUnitOfWork unitOfWork) : IFingerprintService
+    IStudentService studentService, ILogger<FingerprintService> logger) : IFingerprintService
 {
     private readonly EnrollmentCommands _commands = enrollmentOptions.Value;
     private readonly ISerialPortService _serialPortService = serialPortService;
     private readonly FingerprintStatus _fingerprintStatus = fingerprintStatus;
+    private readonly IStudentService _studentService = studentService;
     private readonly ILogger<FingerprintService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     private const int _enrollmentCheckTimeout = 6;
 
@@ -36,11 +36,7 @@ public sealed class FingerprintService(
             if (fingerprintId.IsFailure)
                 continue;
 
-            var fingerprint = Domain.Entities.Fingerprint.Create(fingerprintId.Value, studentId);
-
-            await _unitOfWork.Fingerprints.AddAsync(fingerprint);
-
-            await _unitOfWork.CompleteAsync();
+            await _studentService.SetFingerprintAsync(studentId, fingerprintId.Value, CancellationToken.None);
 
             _logger.LogInformation("The enrollment is succeed.");
 

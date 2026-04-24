@@ -45,7 +45,9 @@ public static class DependencyInjection
             services.AddScoped<IInstructorPassService, InstructorPassService>();
             services.AddScoped<IJobManager, JobManager>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IRecurringJobService, RecurringJobService>();
             services.AddScoped<ISignInService, SignInService>();
+            services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IUrlEncoder, UrlEncoder>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

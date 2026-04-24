@@ -13,4 +13,7 @@ public record StudentErrors
 
     public static readonly Error PromoteFailed =
         new("Student.PromoteFailed", "Failed to promote the student.", StatusCodes.BadRequest);
+
+    public static readonly Error HasFingerprintId =
+        new("Student.HasFingerprintId", "This student already has a fingerprint id.", StatusCodes.BadRequest);
 }

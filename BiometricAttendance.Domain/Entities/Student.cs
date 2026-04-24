@@ -78,7 +78,6 @@ public sealed class Student
         if (FingerprintId.HasValue)
             throw new InvalidOperationException("Student already has a fingerprint assigned.");
 
-        Fingerprint = fingerprint;
         FingerprintId = fingerprint.Id;
     }
 
