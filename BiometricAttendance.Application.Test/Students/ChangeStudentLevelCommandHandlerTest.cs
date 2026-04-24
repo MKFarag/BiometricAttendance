@@ -35,7 +35,7 @@ public class ChangeStudentLevelCommandHandlerTest
     public async Task Handle_WhenPassTheSameLevel_ReturnsSuccessWithNoChanges()
     {
         // Arrange
-        var student = Student.Create(Guid.CreateVersion7().ToString(), 2, 3, null);
+        var student = Student.Create(Guid.CreateVersion7().ToString(), 2, 3);
 
         A.CallTo(() => _studentsRepo.FindAsync(A<Expression<Func<Student, bool>>>.Ignored, A<string[]>.Ignored, A<CancellationToken>.Ignored))
             .Returns(student);

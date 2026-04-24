@@ -49,7 +49,7 @@ namespace BiometricAttendance.Infrastructure.Persistence.Migrations
                     b.HasIndex("StudentId", "CourseId")
                         .IsUnique();
 
-                    b.ToTable("Attendances");
+                    b.ToTable("Attendances", (string)null);
                 });
 
             modelBuilder.Entity("BiometricAttendance.Domain.Entities.Course", b =>
@@ -83,7 +83,7 @@ namespace BiometricAttendance.Infrastructure.Persistence.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("BiometricAttendance.Domain.Entities.Department", b =>
@@ -104,7 +104,7 @@ namespace BiometricAttendance.Infrastructure.Persistence.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("BiometricAttendance.Domain.Entities.Fingerprint", b =>
@@ -123,7 +123,7 @@ namespace BiometricAttendance.Infrastructure.Persistence.Migrations
                     b.HasIndex("StudentId")
                         .IsUnique();
 
-                    b.ToTable("Fingerprints");
+                    b.ToTable("Fingerprints", (string)null);
                 });
 
             modelBuilder.Entity("BiometricAttendance.Domain.Entities.InstructorPass", b =>
@@ -154,7 +154,7 @@ namespace BiometricAttendance.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("InstructorPasses");
+                    b.ToTable("InstructorPasses", (string)null);
                 });
 
             modelBuilder.Entity("BiometricAttendance.Domain.Entities.Student", b =>
@@ -188,7 +188,7 @@ namespace BiometricAttendance.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("BiometricAttendance.Domain.Entities.StudentCourse", b =>
@@ -203,7 +203,7 @@ namespace BiometricAttendance.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("StudentCourses");
+                    b.ToTable("StudentCourses", (string)null);
                 });
 
             modelBuilder.Entity("BiometricAttendance.Infrastructure.Persistence.Identities.ApplicationRole", b =>

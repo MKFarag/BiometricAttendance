@@ -12,7 +12,7 @@ public class CompleteStudentRegistrationCommandHandler(IUnitOfWork unitOfWork) :
         if (!await _unitOfWork.Departments.AnyAsync(x => x.Id == command.Request.DepartmentId, cancellationToken))
             return Result.Failure(DepartmentErrors.NotFound);
 
-        var student = Student.Create(user.Id, command.Request.Level, command.Request.DepartmentId, null);
+        var student = Student.Create(user.Id, command.Request.Level, command.Request.DepartmentId);
 
         await _unitOfWork.Students.AddAsync(student, cancellationToken);
 

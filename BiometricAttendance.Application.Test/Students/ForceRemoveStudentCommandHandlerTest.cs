@@ -74,7 +74,7 @@ public class ForceRemoveStudentCommandHandlerTest
     public async Task Handle_WhenRequestIsValid_RemovesAllRelatedDataAndReturnsSuccess()
     {
         // Arrange
-        var student = Student.Create(Guid.CreateVersion7().ToString(), 4, 2, 7);
+        var student = Student.Create(Guid.CreateVersion7().ToString(), 4, 2);
         student.Attendances.Add(new Attendance());
         student.Courses.Add(new StudentCourse());
 
@@ -111,7 +111,6 @@ public class ForceRemoveStudentCommandHandlerTest
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Null(student.Fingerprint);
-        Assert.Null(student.FingerprintId);
         Assert.Empty(student.Attendances);
         Assert.Empty(student.Courses);
 

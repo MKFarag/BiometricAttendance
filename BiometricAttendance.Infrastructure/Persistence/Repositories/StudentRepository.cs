@@ -1,4 +1,4 @@
-﻿using BiometricAttendance.Application.Contracts.Students;
+using BiometricAttendance.Application.Contracts.Students;
 
 namespace BiometricAttendance.Infrastructure.Persistence.Repositories;
 

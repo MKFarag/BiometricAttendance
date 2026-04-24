@@ -1,4 +1,4 @@
-﻿namespace BiometricAttendance.Application.Mapping;
+namespace BiometricAttendance.Application.Mapping;
 
 public class MappingConfiguration : IRegister
 {

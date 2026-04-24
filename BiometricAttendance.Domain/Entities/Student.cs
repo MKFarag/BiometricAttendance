@@ -21,7 +21,7 @@ public sealed class Student
     public string? DepartmentName => Department?.Name;
     public bool CanPromote => Level < 5;
 
-    public static Student Create(string userId, int level, int departmentId, int? fingerprintId = null)
+    public static Student Create(string userId, int level, int departmentId)
     {
         if (level > 5 || level <= 0)
             throw new ArgumentOutOfRangeException(nameof(level));
@@ -30,8 +30,7 @@ public sealed class Student
         {
             UserId = userId,
             Level = level,
-            DepartmentId = departmentId,
-            FingerprintId = fingerprintId
+            DepartmentId = departmentId
         };
     }
 
