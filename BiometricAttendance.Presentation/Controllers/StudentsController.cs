@@ -2,10 +2,12 @@ using BiometricAttendance.Application.Contracts.Students;
 using BiometricAttendance.Application.Features.Students.EnrollCourses;
 using BiometricAttendance.Application.Features.Students.ChangeDepartment;
 using BiometricAttendance.Application.Features.Students.CompleteRegistration;
+using BiometricAttendance.Application.Features.Students.Get;
 using BiometricAttendance.Application.Features.Students.GetAll;
 using BiometricAttendance.Application.Features.Students.Promote;
 using BiometricAttendance.Application.Features.Students.ChangeLevel;
 using BiometricAttendance.Application.Features.Students.ForceRemove;
+using BiometricAttendance.Application.Features.Students.RemoveCourses;
 
 namespace BiometricAttendance.Presentation.Controllers;
 
@@ -73,6 +75,32 @@ public class StudentsController(ISender sender) : ControllerBase
         => Ok(await _sender.Send(new GetAllStudentsQuery(filters), cancellationToken));
 
     /// <summary>
+    /// Retrieves a specific student by ID.
+    /// </summary>
+    /// <remarks>
+    /// Returns the student's profile details including department and enrolled courses.
+    /// </remarks>
+    /// <param name="id">The id of the student.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The student details.</returns>
+    /// <response code="200">Returns the student details.</response>
+    /// <response code="401">If the user is unauthorized.</response>
+    /// <response code="404">If the student is not found.</response>
+    [HttpGet("{id}")]
+    [HasPermission(Permissions.ReadStudent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get([FromRoute] int id, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetStudentQuery(id), cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : result.ToProblem();
+    }
+
+    /// <summary>
     /// Adds selected courses for the current student.
     /// </summary>
     /// <remarks>
@@ -102,6 +130,42 @@ public class StudentsController(ISender sender) : ControllerBase
     public async Task<IActionResult> EnrollCourses([FromBody] StudentCoursesRequest request, CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new EnrollStudentCoursesCommand(User.GetId()!, request.CoursesId), cancellationToken);
+
+        return result.IsSuccess
+            ? NoContent()
+            : result.ToProblem();
+    }
+
+    /// <summary>
+    /// Removes selected courses from the current student.
+    /// </summary>
+    /// <remarks>
+    /// Allows the authenticated student to remove courses that are already assigned to their account.
+    ///
+    /// Sample request:
+    ///
+    ///     DELETE /api/Students/courses
+    ///     {
+    ///       "coursesId": [1, 2]
+    ///     }
+    ///
+    /// </remarks>
+    /// <param name="request">The request containing the list of course IDs to remove.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content on success.</returns>
+    /// <response code="204">If the courses were removed successfully.</response>
+    /// <response code="400">If one or more courses do not belong to the current student.</response>
+    /// <response code="401">If the user is unauthorized.</response>
+    /// <response code="404">If the user is not found.</response>
+    [HttpDelete("courses")]
+    [Authorize(Roles = DefaultRoles.Student.Name)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveCourses([FromBody] StudentCoursesRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new RemoveStudentCoursesCommand(User.GetId()!, request.CoursesId), cancellationToken);
 
         return result.IsSuccess
             ? NoContent()

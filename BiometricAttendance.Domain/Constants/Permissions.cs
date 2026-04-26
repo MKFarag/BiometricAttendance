@@ -4,12 +4,10 @@ public static class Permissions
 {
     public static string Type { get; } = nameof(Permissions).ToLower();
 
-    #region Department
+    #region Attendance
 
-    public const string ReadDepartment = "department:read";
-    public const string AddDepartment = "department:add";
-    public const string UpdateDepartment = "department:modify";
-    public const string RemoveDepartment = "department:remove";
+    public const string ReadAttendance = "attendance:read";
+    public const string MarkAttendance = "attendance:mark";
 
     #endregion
 
@@ -19,6 +17,22 @@ public static class Permissions
     public const string AddCourse = "course:add";
     public const string UpdateCourse = "course:modify";
     public const string RemoveCourse = "course:remove";
+
+    #endregion
+
+    #region Department
+
+    public const string ReadDepartment = "department:read";
+    public const string AddDepartment = "department:add";
+    public const string UpdateDepartment = "department:modify";
+    public const string RemoveDepartment = "department:remove";
+
+    #endregion
+
+    #region Fingerprint
+
+    public const string FingerprintAction = "fingerprint:action";
+    public const string FingerprintRegister = "fingerprint:register";
 
     #endregion
 

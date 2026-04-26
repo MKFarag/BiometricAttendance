@@ -3,4 +3,5 @@
 public interface IFingerprintService
 {
     Task ExecuteEnrollmentJob(int studentId);
+    Task ExecuteStartAttendanceJob();
 }

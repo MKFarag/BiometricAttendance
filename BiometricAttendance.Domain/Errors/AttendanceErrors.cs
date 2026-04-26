@@ -7,4 +7,7 @@ public record AttendanceErrors
 
     public static readonly Error StudentNotEnrolled =
         new("Attendance.StudentNotEnrolled", "The student is not enrolled in the specified course.", StatusCodes.BadRequest);
+
+    public static readonly Error WeekAlreadyRecorded = 
+        new("Attendance.WeekAlreadyRecorded", "Attendance for this week has already been recorded for the specified course.", StatusCodes.Conflict);
 }

@@ -50,6 +50,54 @@ public sealed class FingerprintService(
         Stop();
     }
 
+    public async Task ExecuteStartAttendanceJob()
+    {
+        var startResult = await StartAsync();
+
+        if (startResult.IsFailure)
+        {
+            _logger.LogError("Error while trying to start the fingerprint: {error}", startResult.Error.Description);
+            return;
+        }
+
+        List<int> fingerprintIds = [];
+
+        _logger.LogInformation("Start reading from fingerprint...");
+
+        while (_fingerprintStatus.IsAttendanceActionWorking)
+        {
+            await Task.Delay(1000);
+
+            var fingerprintId = GetFingerId();
+
+            if (fingerprintId.IsFailure && fingerprintId.Error.StatusCode == 503)
+            {
+                _fingerprintStatus.EndAttendanceAction();
+                _logger.LogCritical("Fingerprint service has a critical error please press End button");
+            }
+
+            if (fingerprintId.IsFailure || fingerprintIds.Contains(fingerprintId.Value))
+                continue;
+
+            fingerprintIds.Add(fingerprintId.Value);
+
+            _logger.LogInformation("Fingerprint id #{fid} has been added", fingerprintId.Value);
+        }
+
+        if (fingerprintIds.Count > 0)
+        {
+            _logger.LogInformation("Sending data...");
+            _fingerprintStatus.SetFingerprintIds(fingerprintIds);
+            _logger.LogInformation("Data sent successfully");
+        }
+        else if (fingerprintIds.Count == 0)
+            _logger.LogWarning("No data has been read");
+
+        _logger.LogWarning("Reading service has been stopped");
+
+        Stop();
+    }
+
     #region Private
 
     private async Task<Result> StartAsync()
