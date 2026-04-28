@@ -15,3 +15,5 @@ global using Mapster;
 global using BiometricAttendance.Application.Contracts.Departments;
 global using BiometricAttendance.Application.Contracts.Students;
 global using BiometricAttendance.Application.Contracts.Attendances;
+global using BiometricAttendance.Application.Contracts.Profile;
+global using BiometricAttendance.Application.Contracts.Fingerprint;

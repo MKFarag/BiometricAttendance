@@ -2,7 +2,7 @@ namespace BiometricAttendance.Application.Contracts.Attendances;
 
 public record EndTakingAttendanceRequest(
     int CourseId,
-    int WeekNum
+    int WeekNumber
 );
 
 #region Validation
@@ -14,7 +14,7 @@ public class EndTakingAttendanceRequestValidator : AbstractValidator<EndTakingAt
         RuleFor(x => x.CourseId)
             .GreaterThan(0);
 
-        RuleFor(x => x.WeekNum)
+        RuleFor(x => x.WeekNumber)
             .GreaterThan(0);
     }
 }

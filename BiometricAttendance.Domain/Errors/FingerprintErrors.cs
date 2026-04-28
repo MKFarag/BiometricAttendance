@@ -5,6 +5,12 @@ public static class FingerprintErrors
     public static readonly Error AlreadyWorking =
         new("Fingerprint.AlreadyWorking", "The fingerprint reader is already running.", StatusCodes.Conflict);
 
+    public static readonly Error EnrollmentAlreadyWorking =
+        new("Fingerprint.EnrollmentAlreadyWorking", "The enrollment is working right now.", StatusCodes.BadRequest);
+
+    public static readonly Error AttendanceActionAlreadyWorking =
+        new("Fingerprint.AttendanceActionAlreadyWorking", "The attendance action is working right now.", StatusCodes.BadRequest);
+
     public static readonly Error StartFailed =
         new("Fingerprint.StartFailed", "Failed to start the fingerprint reader. Check the serial port connection.", StatusCodes.InternalServerError);
 

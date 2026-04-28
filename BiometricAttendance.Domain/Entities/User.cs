@@ -2,6 +2,8 @@
 
 public sealed class User
 {
+    public const int MinDaysBetweenUserNameChanges = 30;
+
     public string Id { get; set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
     public string UserName { get; private set; } = string.Empty;

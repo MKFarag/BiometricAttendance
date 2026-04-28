@@ -21,5 +21,16 @@ public class MappingConfiguration : IRegister
             .Map(dest => dest.Courses, src => src.student.Courses.Select(x => x.Course));
 
         #endregion
+
+        #region StudentProfileResponse
+
+        config.NewConfig<(Student student, User user), StudentProfileResponse>()
+            .Map(dest => dest, src => src.student)
+            .Map(dest => dest.StudentId, src => src.student.Id)
+            .Map(dest => dest, src => src.user)
+            .Map(dest => dest.Department, src => src.student.Department)
+            .Map(dest => dest.Fingerprint, src => src.student.Fingerprint);
+
+        #endregion
     }
 }

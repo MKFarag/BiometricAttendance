@@ -12,6 +12,9 @@ public sealed class FingerprintStatus
     /// <summary>Whether an attendance recording session is currently active.</summary>
     public bool IsAttendanceActionWorking { get; private set; } = false;
 
+    /// <summary>Whether an attendance recording session is currently active.</summary>
+    public bool IsEnrollmentWorking { get; private set; } = false;
+
     /// <summary>Fingerprint IDs collected during the active attendance session.</summary>
     public List<int> FingerprintIds { get; private set; } = [];
 
@@ -22,6 +25,10 @@ public sealed class FingerprintStatus
     public void StartAttendanceAction() => IsAttendanceActionWorking = true;
 
     public void EndAttendanceAction() => IsAttendanceActionWorking = false;
+
+    public void StartEnrollment() => IsEnrollmentWorking = true;
+
+    public void EndEnrollment() => IsEnrollmentWorking = false;
 
     public void SetFingerprintIds(List<int> Ids) => FingerprintIds = Ids;
 
