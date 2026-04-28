@@ -1,4 +1,4 @@
-﻿namespace BiometricAttendance.Application.Features.Incstructors.GetRole;
+﻿namespace BiometricAttendance.Application.Features.Instructors.GetRole;
 
 public class GetInstructorRoleCommandHandler(IUnitOfWork unitOfWork, IInstructorPassService instructorPassService) : IRequestHandler<GetInstructorRoleCommand, Result>
 {

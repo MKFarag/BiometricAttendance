@@ -58,6 +58,11 @@ RecurringJob.AddOrUpdate<IRecurringJobService>(
     x => x.RemoveExpiredRefreshTokenAsync(),
     Cron.DayInterval(RefreshToken.AutoRemoveAfterDays));
 
+RecurringJob.AddOrUpdate<IInstructorPassService>(
+    "CreateNewPass",
+    x => x.CreateNewPassAsync(),
+    Cron.Daily);
+
 app.UseCors();
 
 app.UseAuthentication();

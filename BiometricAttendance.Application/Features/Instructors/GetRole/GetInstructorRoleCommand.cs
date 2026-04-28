@@ -1,3 +1,3 @@
-﻿namespace BiometricAttendance.Application.Features.Incstructors.GetRole;
+﻿namespace BiometricAttendance.Application.Features.Instructors.GetRole;
 
 public record GetInstructorRoleCommand(string UserId, string Pass) : IRequest<Result>;
