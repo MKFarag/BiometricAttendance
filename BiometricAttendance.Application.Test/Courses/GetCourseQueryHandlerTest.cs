@@ -1,7 +1,4 @@
-using BiometricAttendance.Application.Contracts.Courses;
-using BiometricAttendance.Application.Contracts.Departments;
 using BiometricAttendance.Application.Features.Courses.Get;
-using Castle.Components.DictionaryAdapter;
 
 namespace BiometricAttendance.Application.Test.Courses;
 

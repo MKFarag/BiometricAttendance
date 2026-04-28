@@ -40,7 +40,7 @@ public class GetStudentQueryHandlerTest : IClassFixture<MapsterTestFixture>
     {
         // Arrange
         var userId = Guid.CreateVersion7().ToString();
-        var user = User.Create("Mohamed@example.com", "MohamedKhaled", "Mohamed", "Khaled"); 
+        var user = User.Create("Mohamed@example.com", "MohamedKhaled", "Mohamed", "Khaled");
         var student = Student.Create(userId, 3, 2);
 
         A.CallTo(() => _studentRepo.FindAsync(

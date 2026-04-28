@@ -1,6 +1,5 @@
 using BiometricAttendance.Application.Contracts.Departments;
 using BiometricAttendance.Application.Features.Departments.Get;
-using System.Linq.Expressions;
 
 namespace BiometricAttendance.Application.Test.Departments;
 

@@ -1,4 +1,3 @@
-using BiometricAttendance.Application.Contracts.Students;
 using BiometricAttendance.Application.Features.Students.CompleteRegistration;
 
 namespace BiometricAttendance.Application.Test.Students;

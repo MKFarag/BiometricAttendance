@@ -72,7 +72,7 @@ public class EnrollStudentCoursesCommandHandlerTest
     {
         // Arrange
         var student = Student.Create(Guid.CreateVersion7().ToString(), 2, 1);
-        IEnumerable<StudentCourse> studentCourses = 
+        IEnumerable<StudentCourse> studentCourses =
             [StudentCourse.Create(1, student.Id), StudentCourse.Create(2, student.Id)];
 
         A.CallTo(() => _studentRepo.GetAsync(A<object[]>.Ignored, A<CancellationToken>.Ignored))

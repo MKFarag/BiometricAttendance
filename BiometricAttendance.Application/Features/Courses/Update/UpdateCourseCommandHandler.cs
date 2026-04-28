@@ -17,15 +17,15 @@ public class UpdateCourseCommandHandler(IUnitOfWork unitOfWork, ICacheService ca
         if (isNameEqual && isCodeEqual && isDepartmentEqual)
             return Result.Success();
 
-        if (!isNameEqual 
+        if (!isNameEqual
             && await _unitOfWork.Courses.AnyAsync(x => string.Equals(x.Name, request.Name, StringComparison.OrdinalIgnoreCase), cancellationToken))
             return Result.Failure(CourseErrors.NameAlreadyExists);
 
-        if (!isCodeEqual 
+        if (!isCodeEqual
             && await _unitOfWork.Courses.AnyAsync(x => string.Equals(x.Code, request.Code, StringComparison.OrdinalIgnoreCase), cancellationToken))
             return Result.Failure(CourseErrors.CodeAlreadyExists);
 
-        if (!isDepartmentEqual 
+        if (!isDepartmentEqual
             && !await _unitOfWork.Departments.AnyAsync(x => x.Id == request.DepartmentId, cancellationToken))
             return Result.Failure(DepartmentErrors.NotFound);
 

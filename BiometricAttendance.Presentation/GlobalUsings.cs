@@ -1,13 +1,13 @@
 global using Asp.Versioning.ApiExplorer;
 global using BiometricAttendance.Application.Abstractions.Messaging;
+global using BiometricAttendance.Application.Contracts.Common;
 global using BiometricAttendance.Domain.Constants;
 global using BiometricAttendance.Infrastructure.Authentication.Filters;
 global using BiometricAttendance.Infrastructure.Settings;
+global using BiometricAttendance.Presentation.Attributes;
 global using BiometricAttendance.Presentation.Settings;
 global using FluentValidation;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.RateLimiting;
 global using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
-global using BiometricAttendance.Application.Contracts.Common;
-global using BiometricAttendance.Presentation.Attributes;

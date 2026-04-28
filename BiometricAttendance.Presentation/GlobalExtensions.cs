@@ -49,7 +49,7 @@ internal static class GlobalExtensions
 
     extension(ClaimsPrincipal user)
     {
-        internal string? GetId() 
+        internal string? GetId()
             => user.FindFirstValue(ClaimTypes.NameIdentifier);
 
         internal List<string> GetRoles()

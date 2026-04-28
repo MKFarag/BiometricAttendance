@@ -1,7 +1,7 @@
 using BiometricAttendance.Application.Contracts.Auth;
-using BiometricAttendance.Application.Features.Instructors.GetRole;
-using BiometricAttendance.Application.Features.Instructors.GetPass;
 using BiometricAttendance.Application.Features.Instructors.GetAll;
+using BiometricAttendance.Application.Features.Instructors.GetPass;
+using BiometricAttendance.Application.Features.Instructors.GetRole;
 
 namespace BiometricAttendance.Presentation.Controllers;
 
@@ -20,10 +20,10 @@ public class InstructorsController(ISender sender) : ControllerBase
     /// Returns a list of all registered users who have an instructor role.
     /// </remarks>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Ok on success.</returns>
+    /// <returns>All Instructors details.</returns>
     /// <response code="200">If the list returns successfully.</response>
     /// <response code="401">If the user is unauthorized.</response>
-    [HttpPost("")]
+    [HttpGet("")]
     [HasPermission(Permissions.ReadInstructor)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

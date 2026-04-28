@@ -1,5 +1,3 @@
-using static BiometricAttendance.Domain.Constants.DefaultRoles;
-
 namespace BiometricAttendance.Domain.Entities;
 
 public sealed class Attendance

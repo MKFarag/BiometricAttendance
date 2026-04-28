@@ -1,4 +1,3 @@
-using BiometricAttendance.Application.Contracts.Attendances;
 using BiometricAttendance.Application.Features.Attendances.GetTotalAttendance;
 
 namespace BiometricAttendance.Application.Test.Attendances;

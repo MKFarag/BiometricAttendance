@@ -1,12 +1,12 @@
 using BiometricAttendance.Application.Contracts.Students;
-using BiometricAttendance.Application.Features.Students.EnrollCourses;
 using BiometricAttendance.Application.Features.Students.ChangeDepartment;
+using BiometricAttendance.Application.Features.Students.ChangeLevel;
 using BiometricAttendance.Application.Features.Students.CompleteRegistration;
+using BiometricAttendance.Application.Features.Students.EnrollCourses;
+using BiometricAttendance.Application.Features.Students.ForceRemove;
 using BiometricAttendance.Application.Features.Students.Get;
 using BiometricAttendance.Application.Features.Students.GetAll;
 using BiometricAttendance.Application.Features.Students.Promote;
-using BiometricAttendance.Application.Features.Students.ChangeLevel;
-using BiometricAttendance.Application.Features.Students.ForceRemove;
 using BiometricAttendance.Application.Features.Students.RemoveCourses;
 
 namespace BiometricAttendance.Presentation.Controllers;

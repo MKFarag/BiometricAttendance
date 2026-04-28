@@ -18,7 +18,7 @@ public class InstructorPassService(IUnitOfWork unitOfWork) : IInstructorPassServ
 
         if (currentPass.IsExhausted)
             await _unitOfWork.InstructorPasses.AddAsync(new InstructorPass(_maxUses), cancellationToken);
-        
+
         await _unitOfWork.CompleteAsync(cancellationToken);
 
         return true;

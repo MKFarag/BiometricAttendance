@@ -1,7 +1,5 @@
 using BiometricAttendance.Application.Interfaces;
-using BiometricAttendance.Application.Services;
 using BiometricAttendance.Domain.Entities;
-using BiometricAttendance.Domain.Repositories;
 using BiometricAttendance.Presentation;
 using Hangfire;
 using HangfireBasicAuthenticationFilter;

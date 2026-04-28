@@ -1,5 +1,5 @@
-﻿using BiometricAttendance.Application.Features.Departments.Add;
-using BiometricAttendance.Application.Contracts.Departments;
+﻿using BiometricAttendance.Application.Contracts.Departments;
+using BiometricAttendance.Application.Features.Departments.Add;
 
 namespace BiometricAttendance.Application.Test.Departments;
 

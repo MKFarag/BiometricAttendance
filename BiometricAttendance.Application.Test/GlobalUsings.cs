@@ -1,5 +1,5 @@
-global using BiometricAttendance.Application.Interfaces;
 global using BiometricAttendance.Application.Contracts.Students;
+global using BiometricAttendance.Application.Interfaces;
 global using BiometricAttendance.Domain.Abstraction;
 global using BiometricAttendance.Domain.Constants;
 global using BiometricAttendance.Domain.Entities;

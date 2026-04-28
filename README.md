@@ -1,343 +1,421 @@
-# 🖐️ BiometricAttendance
+# BiometricAttendance
 
-A production-ready fingerprint-based attendance management system built with **ASP.NET Core 10** following **Clean Architecture** principles. Designed for educational institutions to replace paper-based attendance with a secure, efficient, and tamper-proof biometric solution.
+BiometricAttendance is a fingerprint-based attendance management API built with ASP.NET Core 10 and Clean Architecture. The project focuses on real attendance workflows for educational institutions, combining identity management, permission-based authorization, fingerprint device integration, attendance analytics, background jobs, and distributed caching.
 
----
+## Overview
 
-## 📋 Table of Contents
+This project is not just a CRUD API. It covers the full operational flow around attendance:
 
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Domain Model](#domain-model)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Security](#security)
-- [Roadmap](#roadmap)
+- User registration, login, refresh token rotation, email confirmation, and password reset
+- Pending-user onboarding into `Student` or `Instructor`
+- Role and permission management using claims
+- Fingerprint registration through a real serial-port device
+- Attendance marking manually or through a fingerprint attendance session
+- Student course enrollment and academic progression
+- Background jobs for refresh-token cleanup and instructor-pass rotation
+- Distributed idempotency with `HybridCache` backed by `Redis`
 
----
+## Why This Project Is Strong
 
-## 🔍 Overview
+- Real hardware integration: fingerprint workflows are connected to a serial-port service, not mocked HTTP-only logic
+- Clean Architecture: clear separation between `Domain`, `Application`, `Infrastructure`, and `Presentation`
+- Custom CQRS pipeline: requests and handlers are implemented inside the solution without adding MediatR
+- Granular permissions: authorization is claim-based, not only role-based
+- Hybrid caching: the project uses `HybridCache` with `StackExchangeRedis` for distributed cache-backed operations
+- Idempotent fingerprint actions: duplicate client requests can be safely rejected or replayed
+- Background reliability: Hangfire is used for recurring operational tasks
+- Production-oriented defaults: rate limiting, health checks, structured logging, OpenAPI docs, and problem-details error handling are already wired in
+- Good test coverage for the application layer: currently `132` unit tests in `BiometricAttendance.Application.Test`
 
-BiometricAttendance is a graduation project that integrates real fingerprint hardware with a clean, scalable backend API. The system handles the full lifecycle of biometric attendance — from fingerprint registration and verification to attendance analytics and report generation.
+## Implemented Features
 
-> ⚠️ This project uses **real fingerprint hardware** for biometric authentication, not simulation.
+### Authentication and account lifecycle
 
----
+- JWT access tokens
+- Refresh tokens with revoke and cleanup flow
+- Email confirmation
+- Forgot password and reset password
+- Profile endpoints for:
+  - viewing current profile
+  - changing password
+  - changing email with confirmation
+  - changing username
 
-## ✨ Features
+### Roles, permissions, and onboarding
 
-### 🔐 Authentication & Security
-- **Biometric Authentication** — Real fingerprint hardware integration for tamper-proof verification
-- **JWT + Refresh Token** — Secure, stateless authentication with token renewal support
-- **Role-based Access Control** — Granular permissions for Admins, Instructors, and Students
-- **Rate Limiting** — Protection on sensitive biometric endpoints
-- **Global Exception Handling** — Consistent, production-ready error responses
+- Default roles seeded through migrations:
+  - `Admin`
+  - `Pending`
+  - `Student`
+  - `Instructor`
+  - `SuperInstructor`
+- Permission-based authorization via role claims such as:
+  - `attendance:read`
+  - `attendance:mark`
+  - `fingerprint:register`
+  - `fingerprint:action`
+  - `student:promote`
+  - `role:add`
+  - `user:modify`
+- Pending users can complete registration as students
+- Pending users can become instructors using a rotating instructor pass
 
-### 👥 User & Course Management
-- Full user lifecycle management (Admins, Instructors, Students)
-- Department and Course creation with assignment workflows
-- Fingerprint registration and re-enrollment per student
+### Student, course, and department workflows
 
-### 📊 Attendance & Analytics
-- Real-time attendance marking via fingerprint scan
-- Per-student attendance percentage per course
-- Instructor-level attendance overview and insights
-- Weekly academic period tracking
+- Department CRUD
+- Course CRUD
+- User CRUD
+- Role CRUD with permission assignment
+- Student registration completion
+- Student self-enrollment in courses
+- Student course removal
+- Student department change
+- Student level change
+- Student promotion
+- Force-removing a student while preserving the identity account
 
-### 📁 Reporting
-- Export attendance reports to **PDF** and **Excel**
-- Bulk export for entire courses
-- Filterable by course, department, date range, and student
+### Attendance workflows
 
-### 🔔 Notifications
-- Automated alerts when a student exceeds absence threshold
-- Powered by **Hangfire** background jobs (no extra infrastructure needed)
+- Manual attendance marking per student, course, and week
+- Fingerprint attendance session:
+  - start session
+  - collect fingerprint identifiers from the device
+  - end session and persist attendance for a specific course/week
+- Attendance queries for:
+  - current student attendance summary
+  - weekly course attendance
+  - total attendance percentage per course
+  - detailed student attendance in a course
 
-### ⚙️ Infrastructure & Observability
-- **Audit Logging** — Full traceability of who did what and when
-- **Health Checks** — Built-in endpoint monitoring
-- **Structured Logging** — via Serilog for production diagnostics
-- **API Versioning** — Backward-compatible endpoint evolution
-- **Docker Support** — One-command setup with `docker-compose`
+### Fingerprint workflows
 
----
+- Fingerprint registration for a specific student
+- Attendance session start/stop through the fingerprint service
+- Serial port configuration through app settings
+- Runtime fingerprint state managed by infrastructure services
 
-## 🏗️ Architecture
+### Reliability and observability
 
-The project follows **Clean Architecture** with strict separation of concerns and unidirectional dependency flow.
+- Global exception handling with problem-details responses
+- Serilog request logging
+- Health checks for:
+  - SQL Server
+  - Hangfire
+  - mail provider
+- Hangfire dashboard protected with basic authentication
+- API versioning using the `x-api-version` header
+- Swagger UI and ReDoc in development
+- Rate limiting policies for IP, user, sliding window, and concurrency
 
+## Redis, Hybrid Cache, and Idempotency
+
+One of the strongest technical parts in this project is the caching and request-safety setup.
+
+### Hybrid Cache
+
+The project registers:
+
+- `services.AddHybridCache()`
+- `services.AddStackExchangeRedisCache(...)`
+
+This gives a two-layer cache model:
+
+- local in-memory cache for fast hot reads
+- distributed Redis cache for cross-instance consistency
+
+The `CacheService` wraps `HybridCache` and supports:
+
+- `GetOrCreateAsync`
+- explicit set/remove
+- removing multiple keys
+- tag-based invalidation
+
+### Idempotent fingerprint endpoints
+
+The custom `IdempotentAttribute` uses `HybridCache` to protect sensitive POST operations from duplicate execution.
+
+Currently it is applied to:
+
+- `POST /api/Fingerprints/register/{studentId}`
+- `POST /api/Fingerprints/attendance/start`
+
+Behavior:
+
+- client sends `X-Idempotency-Key`
+- first request acquires a short distributed lock
+- concurrent duplicate request gets `409 Conflict`
+- successful response is cached briefly and can be replayed safely
+- failed responses are not permanently cached
+
+This is especially useful for hardware-triggered or retried client calls where duplicate fingerprint actions would be harmful.
+
+## Instructor Pass Flow
+
+The instructor onboarding flow is another notable feature.
+
+- A pending user can request instructor role assignment using an instructor pass
+- The pass is single-code based and usage-tracked
+- A pass has a maximum number of uses
+- Hangfire renews or rotates the pass daily depending on whether it has been used
+- If a pass is exhausted, a new one is generated automatically
+
+## Architecture
+
+The solution follows Clean Architecture:
+
+```text
+BiometricAttendance.Domain
+BiometricAttendance.Application
+BiometricAttendance.Infrastructure
+BiometricAttendance.Presentation
+BiometricAttendance.Application.Test
 ```
-BiometricAttendance/
-│
-├── BiometricAttendance.Core/            # Domain Layer
-│   ├── Entities/                        # Domain entities
-│   ├── Interfaces/                      # Repository, service & fingerprint contracts
-│   └── Exceptions/                      # Domain-specific exceptions
-│
-├── BiometricAttendance.Application/     # Application Layer
-│   ├── Services/                        # Use case implementations
-│   ├── DTOs/                            # Data transfer objects
-│   ├── Mappers/                         # Entity ↔ DTO mapping
-│   └── Interfaces/                      # Application service contracts
-│
-├── BiometricAttendance.Infrastructure/  # Infrastructure Layer
-│   ├── Data/                            # DbContext & EF Core configs
-│   ├── Repositories/                    # Repository implementations
-│   ├── Identity/                        # JWT & Auth services
-│   ├── BackgroundJobs/                  # Hangfire job definitions
-│   └── Fingerprint/                     # Fingerprint module (hardware abstraction)
-│       ├── Services/                    # Hardware integration & processing
-│       └── Models/                      # Biometric data models
-│
-└── BiometricAttendance.Presentation/   # Presentation Layer (API)
-    ├── Controllers/                     # API endpoints (v1, v2)
-    ├── Middleware/                      # Global exception handler, logging
-    ├── Extensions/                      # DI registration & app config
-    └── Program.cs
-```
 
-### Dependency Flow
+### Layer responsibilities
 
-```
-Presentation → Application → Core
-Infrastructure → Core
-```
+- `Domain`
+  - entities
+  - constants
+  - errors
+  - repository contracts
+  - result/error abstractions
+- `Application`
+  - use cases
+  - commands and queries
+  - handlers
+  - contracts/DTOs
+  - application services
+- `Infrastructure`
+  - EF Core persistence
+  - repositories
+  - identity integration
+  - JWT provider
+  - mail service
+  - cache service
+  - fingerprint device integration
+  - health checks
+- `Presentation`
+  - controllers
+  - dependency injection
+  - rate limiting
+  - OpenAPI configuration
+  - exception handling
+  - idempotency filter
 
-> No layer depends on an outer layer. The **Core** has zero external dependencies.
-> Fingerprint interfaces live in **Core** — the hardware implementation stays in **Infrastructure**.
+## Tech Stack
 
----
-
-## 🧩 Domain Model
-
-```mermaid
-erDiagram
-
-  Students {
-    int Id PK
-    nvarchar UserId FK
-    int Level
-    int DepartmentId FK
-    int FingerprintId FK
-  }
-
-  Departments {
-    int Id PK
-    nvarchar Name
-  }
-
-  Courses {
-    int Id PK
-    nvarchar Name
-    nvarchar Code
-    int Level
-  }
-
-  DepartmentCourses {
-    int DepartmentId PK
-    int CourseId PK
-  }
-
-  Attendances {
-    int Id PK
-    int StudentId FK
-    int CourseId FK
-    int WeekNumber
-    datetime2 MarkedAt
-  }
-
-  Fingerprints {
-    int Id PK
-    int StudentId FK
-    nvarchar TemplateData
-    datetime2 RegisteredAt
-    datetime2 UpdatedAt
-  }
-
-  InstructorPass {
-    int Id PK
-    nvarchar PassCode
-    datetime2 GeneratedAt
-    datetime2 ExpiredAt
-    bit IsUsed
-  }
-
-  Students ||--o{ Attendances : "has"
-  Students ||--|| Fingerprints : "has"
-  Courses ||--o{ Attendances : "in"
-  Departments ||--o{ Students : "belongs to"
-  Courses ||--o{ DepartmentCourses : "in"
-  Departments ||--o{ DepartmentCourses : "has"
-```
-
-### Key Entities
-
-| Entity | Description |
-|---|---|
-| `Student` | Student profile linked to an identity user, holds level and department |
-| `Department` | Academic department grouping students and courses |
-| `Course` | Subject offered at a specific level, can be shared across departments |
-| `DepartmentCourse` | Junction table — a course can belong to multiple departments |
-| `Attendance` | Record of a student's presence, identified by week number and timestamp |
-| `Fingerprint` | Isolated biometric template per student with registration audit |
-| `InstructorPass` | Single-use time-limited code generated by SuperInstructor for Instructor registration |
-
-> **Roles** (`SuperInstructor`, `Instructor`, `Student`) and auth concerns (`RefreshTokens`, `ApplicationUser` extensions) are managed at the identity layer and intentionally excluded from the business schema.
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
+| Area | Technology |
 |---|---|
 | Framework | ASP.NET Core 10 |
-| ORM | Entity Framework Core + SQL Server |
-| Authentication | JWT Bearer + Refresh Tokens |
-| Background Jobs | Hangfire |
+| Language | C# / .NET 10 |
+| Architecture | Clean Architecture |
+| Data access | Entity Framework Core 10 |
+| Database | SQL Server |
+| Authentication | ASP.NET Core Identity + JWT |
+| Authorization | Role claims + custom permission policies |
+| Caching | `HybridCache` + `Redis` |
+| Background jobs | Hangfire |
+| Validation | FluentValidation |
+| Mapping | Mapster |
 | Logging | Serilog |
-| API Docs | Scalar |
-| Health Checks | AspNetCore.HealthChecks |
-| API Versioning | Asp.Versioning |
-| Containerization | Docker + docker-compose |
-| Reporting | (PDF / Excel export) |
+| API docs | NSwag, Swagger UI, ReDoc |
+| Health checks | AspNetCore HealthChecks |
+| Testing | xUnit + FakeItEasy |
+| Hardware integration | `System.IO.Ports` serial communication |
 
----
+## Main API Areas
 
-## 🚀 Getting Started
+- `/Auth`
+  - login
+  - refresh token
+  - revoke refresh token
+  - register
+  - confirm email
+  - resend confirmation
+  - forgot/reset password
+- `/api/Users`
+- `/api/Roles`
+- `/api/Departments`
+- `/api/Courses`
+- `/api/Students`
+- `/api/Instructors`
+- `/api/Fingerprints`
+- `/api/Attendances`
+- `/me`
+- `/health`
+- `/jobs`
 
-### Prerequisites
+## Data Model Summary
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) *(optional but recommended)*
-- SQL Server or use the Docker setup below
+Main business entities:
 
-### Option 1 — Docker (Recommended)
+- `Student`
+- `Department`
+- `Course`
+- `StudentCourse`
+- `Attendance`
+- `Fingerprint`
+- `InstructorPass`
+
+Identity/persistence-related entities:
+
+- `ApplicationUser`
+- `ApplicationRole`
+- `RefreshToken`
+
+Important notes from the current model:
+
+- a course belongs to one department in the current implementation
+- students are linked to departments and can enroll in multiple courses
+- fingerprints are stored as registered IDs tied to students
+- attendance is tracked by `studentId`, `courseId`, and `weekNumber`
+
+## Migrations
+
+The project already contains EF Core migrations, including:
+
+1. `AddIdentities`
+2. `AddDefaultData`
+3. `AddEntities`
+4. `AddPendingRole`
+5. `AddIndexesAndFixTheStudentWithUserFK`
+6. `ModifyInstructorPass`
+7. `AddStudentCoursesTable`
+8. `RemoveDepartmentCourseTable`
+9. `DeleteUpdatedAtInFingerprint`
+10. `AddPermissionsAndSuperInstructorRole`
+
+These migrations do more than create tables. They also seed important data such as:
+
+- default roles
+- default role claims/permissions
+- a default admin record
+
+### Apply migrations
+
+Use the presentation project as the startup project:
 
 ```bash
-git clone https://github.com/your-username/BiometricAttendance.git
-cd BiometricAttendance
-docker-compose up --build
+dotnet ef database update --project BiometricAttendance.Infrastructure --startup-project BiometricAttendance.Presentation
 ```
 
-The API will be available at `http://localhost:5000`
-Scalar docs at `http://localhost:5000/scalar`
-
-### Option 2 — Local Setup
+### Create a new migration
 
 ```bash
-git clone https://github.com/your-username/BiometricAttendance.git
-cd BiometricAttendance
-
-# Restore dependencies
-dotnet restore
-
-# Apply migrations
-dotnet ef database update --project BiometricAttendance.Infrastructure
-
-# Run
-dotnet run --project BiometricAttendance.Presentation
+dotnet ef migrations add <MigrationName> --project BiometricAttendance.Infrastructure --startup-project BiometricAttendance.Presentation --output-dir Persistence/Migrations
 ```
 
-### Configuration
+## Configuration
 
-Update `appsettings.json` with your values:
+Important configuration sections used by the project:
+
+- `ConnectionStrings:DefaultConnection`
+- `ConnectionStrings:HangfireConnection`
+- `ConnectionStrings:Redis`
+- `Jwt`
+- `MailSettings`
+- `AppUrlSettings`
+- `RateLimitingOptions`
+- `EnrollmentCommands`
+- `SerialPort`
+- `AllowedOrigins`
+- `Hangfire`
+
+### Example appsettings values
 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=.;Database=BiometricAttendanceDb;Trusted_Connection=True;"
+    "DefaultConnection": "Data Source=.;Database=BiometricAttendance;Integrated Security=True;Encrypt=false;Trust Server Certificate=True;",
+    "HangfireConnection": "Data Source=.;Database=BiometricAttendanceJobs;Integrated Security=True;Encrypt=false;Trust Server Certificate=True;",
+    "Redis": "localhost:6379"
   },
-  "JWT": {
+  "Jwt": {
     "Key": "your-secret-key",
     "Issuer": "BiometricAttendance",
-    "Audience": "BiometricAttendanceUsers",
-    "ExpiryMinutes": 60,
-    "RefreshTokenExpiryDays": 7
+    "Audience": "BiometricAttendance users",
+    "ExpiryMinutes": 30
+  },
+  "SerialPort": {
+    "PortName": "COM4",
+    "BaudRate": 9600
   }
 }
 ```
 
----
+## Running the Project
 
-## 📝 API Documentation
+### Local development
 
-Interactive API docs are available via **Scalar** at `/scalar` when running locally.
+1. Install .NET 10 SDK
+2. Prepare SQL Server
+3. Prepare Redis
+4. Update configuration values in `BiometricAttendance.Presentation/appsettings.Development.json` or user secrets
+5. Apply migrations
+6. Run the API
 
-### Endpoint Groups
+```bash
+dotnet restore
+dotnet ef database update --project BiometricAttendance.Infrastructure --startup-project BiometricAttendance.Presentation
+dotnet run --project BiometricAttendance.Presentation
+```
 
-| Group | Description |
-|---|---|
-| `auth` | Login, refresh token, logout |
-| `users` | User management (Admin only) |
-| `students` | Student registration & profiles |
-| `departments` | Department CRUD |
-| `courses` | Course management & assignments |
-| `fingerprint` | Register & verify biometric data |
-| `attendance` | Mark & query attendance records |
-| `reports` | Export PDF / Excel attendance reports |
-| `analytics` | Attendance statistics per student/course |
-| `health` | System health check |
+### Development endpoints
 
----
+- Swagger UI: `/swagger`
+- ReDoc: `/redoc`
+- Health checks: `/health`
+- Hangfire dashboard: `/jobs`
 
-## 🔒 Security
+## Docker
 
-- **JWT Bearer Authentication** with short-lived access tokens
-- **Refresh Token Rotation** — tokens are invalidated after use
-- **Role-based Authorization** — `Admin`, `Instructor`, `Student`
-- **Rate Limiting** — applied to fingerprint and auth endpoints
-- **Audit Logging** — every data mutation is logged with user + timestamp
-- **HTTPS enforced** in production
-- **Biometric data** is stored as encrypted references, never raw images
+There is a Docker setup in [BiometricAttendance.Presentation/docker-compose.yml](BiometricAttendance.Presentation/docker-compose.yml).
 
----
+Current compose file provisions:
 
-## 🗺️ Roadmap
+- API container
+- SQL Server container
 
-### ✅ Phase 1 — Core System
-- [x] Clean Architecture setup
-- [x] JWT Authentication
-- [x] User & Role management
-- [x] Department & Course management
-- [x] Fingerprint hardware integration
-- [x] Real-time attendance marking
+Important note:
 
-### 🔄 Phase 2 — Quality & Reliability *(In Progress)*
-- [ ] Fix N+1 query issues with proper projections
-- [ ] Add `AsNoTracking` on read-only queries
-- [ ] Implement `IMemoryCache` / `IDistributedCache` for hot data
-- [ ] Global Exception Handler middleware
-- [ ] Refresh Token implementation
-- [ ] Rate Limiting on sensitive endpoints
+- Redis is configured in the application, but the current compose file does not provision a Redis container yet
+- if you want full distributed cache behavior for idempotency and `HybridCache`, run Redis separately or extend the compose file
 
-### 📦 Phase 3 — Features & Observability
-- [ ] PDF & Excel report export
-- [ ] Absence notification system via Hangfire
-- [ ] Per-student attendance analytics endpoint
-- [ ] Audit logging middleware
-- [ ] Docker + docker-compose setup
+## Security and Runtime Protections
 
-### 🧪 Phase 4 — Testing & Deployment
-- [ ] Integration tests on core endpoints
-- [ ] GitHub Actions CI pipeline
-- [ ] Production deployment documentation
+- JWT bearer authentication
+- refresh-token revoke flow
+- lockout settings for failed logins
+- confirmed-email requirement
+- role + permission authorization
+- rate limiting on sensitive endpoints
+- idempotency protection on critical fingerprint operations
+- centralized exception handling
+- restricted Hangfire dashboard access
 
----
+## Testing
 
-## 🤝 Contributing
+The solution contains an application test project:
 
-This is a graduation project. Feedback, suggestions, and issues are welcome via [GitHub Issues](https://github.com/your-username/BiometricAttendance/issues).
+- `BiometricAttendance.Application.Test`
 
----
+It currently includes `132` unit tests covering handlers and services across:
 
-## 📄 License
+- users
+- roles
+- departments
+- courses
+- students
+- attendances
+- profile flows
+- instructor-pass logic
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+## Current Notes
 
----
+- The previous README mentioned features like PDF/Excel reports, Scalar, and some roadmap items that do not match the current codebase; this document reflects the implemented state instead
+- Docker support exists, but Redis is still expected as an external dependency for full cache-backed behavior
+- The fingerprint flow depends on the configured serial port and the connected device behavior
 
-<div align="center">
-  Built with ❤️ using ASP.NET Core 10 | Clean Architecture | Real Biometric Hardware
-</div>
+## License
+
+This repository currently does not include a dedicated `LICENSE` file in the project root. Add one if you plan to publish the project publicly.

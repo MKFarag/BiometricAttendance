@@ -1,5 +1,4 @@
-﻿using BiometricAttendance.Application.Features.Students.EnrollCourses;
-using BiometricAttendance.Application.Features.Students.RemoveCourses;
+﻿using BiometricAttendance.Application.Features.Students.RemoveCourses;
 
 namespace BiometricAttendance.Application.Test.Students;
 

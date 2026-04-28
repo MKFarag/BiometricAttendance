@@ -4,7 +4,6 @@ using BiometricAttendance.Application.Features.Courses.Get;
 using BiometricAttendance.Application.Features.Courses.GetAll;
 using BiometricAttendance.Application.Features.Courses.Remove;
 using BiometricAttendance.Application.Features.Courses.Update;
-using BiometricAttendance.Presentation;
 
 namespace BiometricAttendance.Presentation.Controllers;
 
