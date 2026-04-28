@@ -38,6 +38,12 @@ public record UserErrors
     public static readonly Error SameEmail =
         new("User.SameEmail", "You cannot enter the same email", StatusCodes.BadRequest);
 
+    public static readonly Error SameUserName =
+        new("User.SameUserName", "You cannot enter the same username", StatusCodes.BadRequest);
+
+    public static readonly Error UserNameChangeNotAllowed =
+        new("User.UserNameChangeNotAllowed", "Username change is not allowed for you right now", StatusCodes.BadRequest);
+
     public static readonly Error EmailNotConfirmed =
         new("User.EmailNotConfirmed", "Email is not confirmed", StatusCodes.Unauthorized);
 

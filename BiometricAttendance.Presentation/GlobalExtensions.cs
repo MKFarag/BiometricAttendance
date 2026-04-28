@@ -2,6 +2,7 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace BiometricAttendance.Presentation;
 
@@ -48,7 +49,13 @@ internal static class GlobalExtensions
 
     extension(ClaimsPrincipal user)
     {
-        internal string? GetId() =>
-            user.FindFirstValue(ClaimTypes.NameIdentifier);
+        internal string? GetId() 
+            => user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        internal List<string> GetRoles()
+            => [.. user.FindAll("roles")
+                   .Select(c => JsonSerializer.Deserialize<List<string>>(c.Value))
+                   .Where(r => r is not null)
+                   .SelectMany(r => r!)];
     }
 }

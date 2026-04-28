@@ -16,6 +16,8 @@ public sealed class FingerprintService(
     {
         var startResult = await StartAsync();
 
+        _fingerprintStatus.StartEnrollment();
+
         if (startResult.IsFailure)
         {
             _logger.LogError("Error while trying to start the fingerprint: {error}", startResult.Error.Description);
@@ -46,6 +48,8 @@ public sealed class FingerprintService(
         SendEnrollmentDeny();
 
         _logger.LogWarning("Enrollment is over");
+
+        _fingerprintStatus.EndEnrollment();
 
         Stop();
     }

@@ -17,3 +17,4 @@ global using BiometricAttendance.Application.Contracts.Students;
 global using BiometricAttendance.Application.Contracts.Attendances;
 global using BiometricAttendance.Application.Contracts.Instructors;
 global using BiometricAttendance.Application.Contracts.Fingerprint;
+global using BiometricAttendance.Application.Contracts.Profile;

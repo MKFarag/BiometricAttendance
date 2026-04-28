@@ -108,7 +108,7 @@ public class FingerprintsController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> EndTakingAttendance([FromBody] EndTakingAttendanceRequest request, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new EndTakingAttendanceCommand(request.CourseId, request.WeekNum), cancellationToken);
+        var result = await _sender.Send(new EndTakingAttendanceCommand(request.CourseId, request.WeekNumber), cancellationToken);
 
         return result.IsSuccess
             ? Ok()

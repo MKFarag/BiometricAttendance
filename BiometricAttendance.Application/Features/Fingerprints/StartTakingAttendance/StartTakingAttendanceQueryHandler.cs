@@ -8,6 +8,9 @@ public class StartTakingAttendanceQueryHandler(IJobManager jobManager, IFingerpr
 
     public async Task<Result> Handle(StartTakingAttendanceQuery request, CancellationToken cancellationToken = default)
     {
+        if (_fingerprintStatus.IsAttendanceActionWorking)
+            return Result.Failure(FingerprintErrors.AttendanceActionAlreadyWorking);
+
         _fingerprintStatus.StartAttendanceAction();
 
         _jobManager.Enqueue(() => _fingerprintService.ExecuteStartAttendanceJob());
