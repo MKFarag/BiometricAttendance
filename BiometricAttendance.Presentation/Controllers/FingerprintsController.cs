@@ -36,6 +36,7 @@ public class FingerprintsController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [Idempotent]
     public async Task<IActionResult> Register([FromRoute] int studentId, CancellationToken cancellationToken)
     {
         if (studentId <= 0)
@@ -64,6 +65,7 @@ public class FingerprintsController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [Idempotent]
     public async Task<IActionResult> StartTakingAttendance(CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new StartTakingAttendanceQuery(), cancellationToken);

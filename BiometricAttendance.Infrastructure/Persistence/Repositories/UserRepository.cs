@@ -21,6 +21,16 @@ public class UserRepository(ApplicationDbContext context, UserManager<Applicatio
             .ProjectToType<User>()
             .SingleOrDefaultAsync(cancellationToken);
 
+    public async Task<IEnumerable<User>> FindAllByRoleAsync(string roleName, CancellationToken cancellationToken = default)
+        => await (from u in _context.Users
+                  join ur in _context.UserRoles on u.Id equals ur.UserId
+                  join r in _context.Roles on ur.RoleId equals r.Id
+                  where string.Equals(r.Name, roleName, StringComparison.OrdinalIgnoreCase)
+                  select u)
+                  .AsNoTracking()
+                  .ProjectToType<User>()
+                  .ToListAsync(cancellationToken);
+
     public async Task<IEnumerable<TProjection>> GetAllProjectionWithRolesAsync<TProjection>(bool includeDefaultRole, CancellationToken cancellationToken = default)
         where TProjection : class
         => await (from u in _context.Users

@@ -29,4 +29,11 @@ public static class DefaultRoles
         public const string Id = "019d8563-a991-7ed3-85ca-3ce1df3896c2";
         public const string ConcurrencyStamp = "019d8563-d6df-7c2e-9b3d-223f0d1d0465";
     }
+
+    public partial class SuperInstructor
+    {
+        public const string Name = nameof(SuperInstructor);
+        public const string Id = "019dd5a8-a53b-7bab-9115-df41914dc7b6";
+        public const string ConcurrencyStamp = "019dd5aa-01b4-70a7-b2b8-a6929b0cfec5";
+    }
 }

@@ -1,4 +1,4 @@
-using BiometricAttendance.Application.Features.Incstructors.GetRole;
+using BiometricAttendance.Application.Features.Instructors.GetRole;
 
 namespace BiometricAttendance.Application.Test.Instructors;
 

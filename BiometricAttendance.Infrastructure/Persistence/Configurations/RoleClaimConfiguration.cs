@@ -4,15 +4,10 @@ internal class RoleClaimConfiguration : IEntityTypeConfiguration<IdentityRoleCla
 {
     public void Configure(EntityTypeBuilder<IdentityRoleClaim<string>> builder)
     {
-        // Default data
-
-        var allPermissions = Permissions.GetAll();
-        var adminClaims = new List<IdentityRoleClaim<string>>();
         var id = 1;
 
-        // Admin claims
-        foreach (var permission in allPermissions)
-            adminClaims.Add(new IdentityRoleClaim<string>
+        var adminClaims = Permissions.GetAll()
+            .Select(permission => new IdentityRoleClaim<string>
             {
                 Id = id++,
                 RoleId = DefaultRoles.Admin.Id,
@@ -20,7 +15,38 @@ internal class RoleClaimConfiguration : IEntityTypeConfiguration<IdentityRoleCla
                 ClaimValue = permission
             });
 
-        // TODO: Activate when seeding is ready
-        //builder.HasData(adminClaims);
+        var instructorClaims = Permissions.GetAllForInstructor()
+            .Select(permission => new IdentityRoleClaim<string>
+            {
+                Id = id++,
+                RoleId = DefaultRoles.Instructor.Id,
+                ClaimType = Permissions.Type,
+                ClaimValue = permission
+            });
+
+        var superInstructorClaims = Permissions.GetAllForSuperInstructor()
+            .Select(permission => new IdentityRoleClaim<string>
+            {
+                Id = id++,
+                RoleId = DefaultRoles.SuperInstructor.Id,
+                ClaimType = Permissions.Type,
+                ClaimValue = permission
+            });
+
+        var studentClaims = Permissions.GetAllForStudent()
+            .Select(permission => new IdentityRoleClaim<string>
+            {
+                Id = id++,
+                RoleId = DefaultRoles.Student.Id,
+                ClaimType = Permissions.Type,
+                ClaimValue = permission
+            });
+
+        builder.HasData([
+            .. adminClaims,
+            .. instructorClaims,
+            .. superInstructorClaims,
+            .. studentClaims
+        ]);
     }
 }

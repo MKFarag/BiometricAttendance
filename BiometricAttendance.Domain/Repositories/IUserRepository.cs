@@ -10,6 +10,9 @@ public interface IUserRepository
     /// <summary>Finds a user by their email address.</summary>
     Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default);
 
+    /// <summary>Finds all users who have a specific role.</summary>
+    Task<IEnumerable<User>> FindAllByRoleAsync(string roleName, CancellationToken cancellationToken = default);
+
     /// <summary>Gets all users with their roles projected to a specific type.</summary>
     Task<IEnumerable<TProjection>> GetAllProjectionWithRolesAsync<TProjection>(bool includeDefaultRole, CancellationToken cancellationToken = default)
         where TProjection : class;

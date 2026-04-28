@@ -279,7 +279,7 @@ public class StudentsController(ISender sender) : ControllerBase
     /// <response code="401">If the user is unauthorized.</response>
     /// <response code="404">If the student is not found.</response>
     [HttpDelete("{id}/force-remove")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [HasPermission(Permissions.ForceRemoveStudent)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

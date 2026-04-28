@@ -1,4 +1,5 @@
 using BiometricAttendance.Application.Contracts.Attendances;
+using BiometricAttendance.Application.Features.Attendances.GetMyAttendance;
 using BiometricAttendance.Application.Features.Attendances.GetStudentAttendanceDetail;
 using BiometricAttendance.Application.Features.Attendances.GetTotalAttendance;
 using BiometricAttendance.Application.Features.Attendances.GetWeekAttendance;
@@ -13,6 +14,31 @@ namespace BiometricAttendance.Presentation.Controllers;
 public class AttendancesController(ISender sender) : ControllerBase
 {
     private readonly ISender _sender = sender;
+
+    /// <summary>
+    /// Retrieves the current authenticated student's attendance across all enrolled courses.
+    /// </summary>
+    /// <remarks>
+    /// Returns a per-course attendance breakdown with individual and overall attendance percentages for the authenticated student.
+    /// </remarks>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The student's attendance summary.</returns>
+    /// <response code="200">Returns the attendance summary.</response>
+    /// <response code="401">If the user is unauthorized.</response>
+    /// <response code="404">If the student profile is not found.</response>
+    [HttpGet("my")]
+    [Authorize(Roles = DefaultRoles.Student.Name)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMyAttendance(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetMyAttendanceQuery(User.GetId()!), cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : result.ToProblem();
+    }
 
     /// <summary>
     /// Retrieves attendance records for a specific course week.
@@ -126,7 +152,7 @@ public class AttendancesController(ISender sender) : ControllerBase
     /// <response code="404">If the student or course is not found.</response>
     /// <response code="409">If attendance was already recorded for the same week.</response>
     [HttpPost("mark")]
-    [HasPermission(Permissions.ReadAttendance)]
+    [HasPermission(Permissions.MarkAttendance)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

@@ -37,6 +37,14 @@ internal class ApplicationRoleConfiguration : IEntityTypeConfiguration<Applicati
             NormalizedName = DefaultRoles.Instructor.Name.ToUpper(),
             ConcurrencyStamp = DefaultRoles.Instructor.ConcurrencyStamp,
             IsDefault = false,
+        },
+        new ApplicationRole
+        {
+            Id = DefaultRoles.SuperInstructor.Id,
+            Name = DefaultRoles.SuperInstructor.Name,
+            NormalizedName = DefaultRoles.SuperInstructor.Name.ToUpper(),
+            ConcurrencyStamp = DefaultRoles.SuperInstructor.ConcurrencyStamp,
+            IsDefault = false,
         });
     }
 }

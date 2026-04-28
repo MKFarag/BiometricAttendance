@@ -36,6 +36,13 @@ public static class Permissions
 
     #endregion
 
+    #region Instructor
+
+    public const string ReadInstructor = "instructor:read";
+    public const string GetInstructorPass = "instructor:get-pass";
+
+    #endregion
+
     #region Role
 
     public const string ReadRole = "role:read";
@@ -49,7 +56,9 @@ public static class Permissions
 
     public const string ReadStudent = "student:read";
     public const string ChangeStudentDepartment = "student:change-department";
+    public const string ChangeStudentLevel = "student:change-level";
     public const string PromoteStudent = "student:promote";
+    public const string ForceRemoveStudent = "student:force-remove";
 
     #endregion
 
@@ -64,4 +73,38 @@ public static class Permissions
 
     public static IList<string?> GetAll()
         => [.. typeof(Permissions).GetFields().Select(x => x.GetValue(x) as string)];
+
+    public static IList<string> GetAllForStudent()
+        => [
+            ReadCourse,
+            ReadDepartment
+        ];
+
+    public static IList<string> GetAllForInstructor()
+        => [
+            ReadCourse,
+            ReadDepartment,
+            ReadStudent,
+            ReadAttendance,
+            MarkAttendance,
+            FingerprintAction,
+            FingerprintRegister
+        ];
+
+    public static IList<string> GetAllForSuperInstructor()
+        => [
+            ReadCourse,
+            AddCourse,
+            UpdateCourse,
+            ReadDepartment,
+            ReadStudent,
+            ReadAttendance,
+            MarkAttendance,
+            ChangeStudentDepartment,
+            ChangeStudentLevel,
+            PromoteStudent,
+            FingerprintAction,
+            FingerprintRegister,
+            ReadInstructor
+        ];
 }
